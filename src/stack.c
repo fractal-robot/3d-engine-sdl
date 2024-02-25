@@ -57,17 +57,29 @@ Stack *initializeStack(void *array, int arraySize) {
 }
 
 void append(Stack *appendTo, Stack *appendFrom) {
-  void *newArray =
-      realloc(appendTo->items,
-              ((appendTo->capacity + appendFrom->capacity)) * sizeof(void *));
-  appendTo->capacity = appendTo->capacity + appendFrom->capacity;
-  appendTo->items = newArray;
-  printf("Append, reallocating to size: %i.\n", appendTo->capacity);
-  for (int i = 0; i <= appendFrom->top; ++i) {
-    push(appendTo, pop(appendFrom));
+  if (isEmpty(appendFrom)) {
+    deleteStack(appendFrom);
+    return;
   }
 
+  appendTo->items =
+      realloc(appendTo->items,
+              (appendTo->capacity + appendFrom->capacity) * sizeof(void *));
+  if (appendTo->items == NULL) {
+    // Handle memory allocation failure
+    printf("Memory allocation failed.\n");
+    deleteStack(appendFrom);
+    return;
+  }
+
+  memcpy(appendTo->items + appendTo->top + 1, appendFrom->items,
+         (appendFrom->top + 1) * sizeof(void *));
+  appendTo->top += appendFrom->top + 1;
+  appendTo->capacity += appendFrom->capacity;
+
   deleteStack(appendFrom);
+  appendFrom->top = -1;
+  appendFrom->capacity = 0;
 }
 
 void *getStackItem(Stack *stack, int index) {
