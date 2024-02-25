@@ -7,7 +7,12 @@ typedef struct {
 } Point2d;
 
 typedef struct {
+  int x;
+  int y;
+  float hue;
+} Point2dCarryHue;
 
+typedef struct {
   int x;
   int y;
   int z;
