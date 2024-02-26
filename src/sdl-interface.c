@@ -2,6 +2,7 @@
 // individual pixels to a canva of center (0, 0)
 
 #include "sdl-interface.h"
+#include "definition.h"
 #include "structs.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
@@ -14,13 +15,13 @@
 #error "WINDOW_WIDTH must be a power of two."
 #endif
 
-void setPixel(SDL_Renderer *renderer, Point2d coord, const Color *color) {
+void setPixel(SDL_Renderer *renderer, Mat2d coord, const Color *color) {
   // (0, 0) is the center of the screen
   // y is increasing to the top of the screen
   //  assert(coord.x < RENDER_WIDTH && coord.y < RENDER_WIDTH);
 
-  coord.x = (RENDER_WIDTH / 2 + coord.x) * SCALE_FACTOR;
-  coord.y = (RENDER_WIDTH / 2 - coord.y) * SCALE_FACTOR;
+  coord.x = ((int)(RENDER_WIDTH / 2) + coord.x) * SCALE_FACTOR;
+  coord.y = ((int)(RENDER_WIDTH / 2) - coord.y) * SCALE_FACTOR;
   const int scaleOffset = SCALE_FACTOR / 2;
 
   SDL_SetRenderDrawColor(renderer, color->red, color->green, color->blue, 1);

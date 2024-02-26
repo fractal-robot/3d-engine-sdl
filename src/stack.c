@@ -78,8 +78,6 @@ void append(Stack *appendTo, Stack *appendFrom) {
   appendTo->capacity += appendFrom->capacity;
 
   deleteStack(appendFrom);
-  appendFrom->top = -1;
-  appendFrom->capacity = 0;
 }
 
 void *getStackItem(Stack *stack, int index) {

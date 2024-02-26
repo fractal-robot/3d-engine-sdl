@@ -8,11 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 
-#define WINDOW_WIDTH 1024 // should be a power of 2
-#define SCALE_FACTOR 1    // should be a power of 2
-#define RENDER_WIDTH (WINDOW_WIDTH / SCALE_FACTOR)
-
-void setPixel(SDL_Renderer *renderer, Point2d coord, const Color *color);
+void setPixel(SDL_Renderer *renderer, Mat2d coord, const Color *color);
 void clearCanva(SDL_Renderer *renderer);
 
 #endif

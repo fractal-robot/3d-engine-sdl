@@ -4,24 +4,31 @@
 typedef struct {
   float x;
   float y;
-} Point2d;
+} Mat2d;
 
 typedef struct {
   float x;
   float y;
   float z;
-} Point3d;
+} Mat3d;
 
 typedef struct {
-  int x;
-  int y;
+  float x;
+  float y;
   float hue;
-} Point2dCarryHue;
+} Mat2dCarryHue;
 
 typedef struct {
   char red;
   char green;
   char blue;
 } Color;
+
+typedef struct {
+  int a;
+  int b;
+  int c; // these refers to the index of the coordinates
+  Color color;
+} Triangle;
 
 #endif

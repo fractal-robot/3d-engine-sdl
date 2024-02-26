@@ -53,3 +53,7 @@ dkms.conf
 
 # lsp
 compile_flags.txt
+
+# other
+temp/
+
