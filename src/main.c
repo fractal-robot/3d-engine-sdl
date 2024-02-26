@@ -1,4 +1,5 @@
 #include "definition.h"
+#include "instances.h"
 #include "models.h"
 #include "sdl-interface.h"
 #include <SDL2/SDL.h>
@@ -27,7 +28,8 @@ int main(void) {
 
   Model *cube = createModelCube();
 
-  renderModel(renderer, cube);
+  Instance instance = {cube, (Mat3d){0, 0, 0}};
+  renderInstance(renderer, &instance);
 
   while (1) {
     SDL_RenderPresent(renderer);

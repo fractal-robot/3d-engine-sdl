@@ -10,7 +10,6 @@ void renderModel(SDL_Renderer *renderer, Model *model) {
     Mat3d translated = translate(model->vertices[v]);
     Mat2d *vertex = malloc(sizeof(Mat2d));
     *vertex = projectVertex(&translated);
-    printf("Calculated projection for %f %f\n", vertex->x, vertex->y);
     push(projected, vertex);
   }
 
@@ -19,10 +18,6 @@ void renderModel(SDL_Renderer *renderer, Model *model) {
     Mat2d v1 = *(Mat2d *)getStackItem(projected, triangle.a);
     Mat2d v2 = *(Mat2d *)getStackItem(projected, triangle.b);
     Mat2d v3 = *(Mat2d *)getStackItem(projected, triangle.c);
-    printf("Point 1: %f %f\n", v1.x, v1.y);
-    printf("Point 2: %f %f\n", v2.x, v2.y);
-    printf("Point 3: %f %f\n", v3.x, v3.y);
-    printf("Accesing vertices %i %i %i\n", triangle.a, triangle.b, triangle.c);
     drawWireframeTriangle(renderer, v1, v2, v3, &triangle.color);
   }
 }
@@ -51,11 +46,6 @@ Model *createModelCube() {
   vertices[5] = (Mat3d){-1, 1, -1};
   vertices[6] = (Mat3d){-1, -1, -1};
   vertices[7] = (Mat3d){1, -1, -1};
-
-  for (int v = 0; v < 8; ++v) {
-    Mat2d val = projectVertex(&vertices[v]);
-    printf("at index %i, got %f %f\n", v, val.x, val.y);
-  }
 
   Model *cube = malloc(sizeof(Model));
 
