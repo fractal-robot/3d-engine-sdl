@@ -2,21 +2,21 @@
 #define STRUCTS_H
 
 typedef struct {
-  int x;
-  int y;
+  float x;
+  float y;
 } Point2d;
+
+typedef struct {
+  float x;
+  float y;
+  float z;
+} Point3d;
 
 typedef struct {
   int x;
   int y;
   float hue;
 } Point2dCarryHue;
-
-typedef struct {
-  int x;
-  int y;
-  int z;
-} Point3d;
 
 typedef struct {
   char red;

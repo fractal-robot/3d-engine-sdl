@@ -8,6 +8,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define RED ((Color){255, 0, 0})
+#define GREEN ((Color){0, 255, 0})
+#define BLUE ((Color){0, 0, 255})
+#define WHITE ((Color){255, 255, 255})
+#define BLACK ((Color){0, 0, 0})
+
+#define D 1
+#define VIEWPORT_WIDTH 10
+
 SDL_Renderer *renderer;
 
 void swapPoint2d(Point2d *a, Point2d *b) {
@@ -220,7 +229,19 @@ void drawShadeTriangle(Point2dCarryHue p0, Point2dCarryHue p1,
   }
 
   deleteStack(x012);
+  deleteStack(h012);
   deleteStack(x02);
+  deleteStack(h02);
+}
+
+Point2d viewPortToCanva(Point2d point) {
+  return (Point2d){point.x * (int)RENDER_WIDTH / VIEWPORT_WIDTH,
+                   point.y * (int)RENDER_WIDTH / VIEWPORT_WIDTH};
+}
+
+Point2d projectVertex(const Point3d *point) {
+  return viewPortToCanva(
+      (Point2d){point->x * (D / point->z), point->y * (D / point->z)});
 }
 
 int main(void) {
@@ -238,29 +259,51 @@ int main(void) {
 
   // render the scene
 
-  Color color = {20, 20, 20};
-  Color colorTriangle = {255, 255, 255};
-  // drawLine((Point2d){0, 0}, (Point2d){0, 200}, &color);
-  // drawLine((Point2d){0, 0}, (Point2d){-240, -20}, &color);
-  // drawLine((Point2d){0, 0}, (Point2d){200, 0}, &color);
+  clearCanva(renderer);
 
-  // drawLine((Point2d){50, -209}, (Point2d){0, 20}, &color);
-  // drawLine((Point2d){-50, -20}, (Point2d){60, 240}, &color);
+  // the four front vertices
+  const Point3d vAf = {-1, 1, 1};
+  const Point3d vBf = {1, 1, 1};
+  const Point3d vCf = {1, -1, 1};
+  const Point3d vDf = {-1, -1, 1};
+
+  // the four back vertices
+  const Point3d vAb = {-1, 1, 2};
+  const Point3d vBb = {1, 1, 2};
+  const Point3d vCb = {1, -1, 2};
+  const Point3d vDb = {-1, -1, 2};
+
+  const Point2d vAfp = projectVertex(&vAf);
+  const Point2d vBfp = projectVertex(&vBf);
+  const Point2d vCfp = projectVertex(&vCf);
+  const Point2d vDfp = projectVertex(&vDf);
+  const Point2d vAbp = projectVertex(&vAb);
+  const Point2d vBbp = projectVertex(&vBb);
+  const Point2d vCbp = projectVertex(&vCb);
+  const Point2d vDbp = projectVertex(&vDb);
+
+  Color blue = {0, 0, 255};
+  Color green = {0, 255, 0};
+  Color red = {255, 0, 0};
+
+  drawLine(vAfp, vBfp, &blue);
+  drawLine(vBfp, vCfp, &blue);
+  drawLine(vCfp, vDfp, &blue);
+  drawLine(vDfp, vAfp, &blue);
+
+  drawLine(vAbp, vBbp, &red);
+  drawLine(vBbp, vCbp, &red);
+  drawLine(vCbp, vDbp, &red);
+  drawLine(vDbp, vAbp, &red);
+
+  drawLine(vAfp, vAbp, &green);
+  drawLine(vBfp, vBbp, &green);
+  drawLine(vCfp, vCbp, &green);
+  drawLine(vDfp, vDbp, &green);
 
   while (1) {
-    clearCanva(renderer);
-    drawWireframeTriangle((Point2d){0, 0}, (Point2d){200, 300},
-                          (Point2d){400, 100}, &colorTriangle);
-
-    drawTriangle((Point2d){0, 0}, (Point2d){-300, -420}, (Point2d){120, -600},
-                 &color);
-
-    drawShadeTriangle((Point2dCarryHue){0, 0, 1},
-                      (Point2dCarryHue){-200, -200, 0.5},
-                      (Point2dCarryHue){-200, 300, 0}, &color);
 
     SDL_RenderPresent(renderer);
-
     if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
       break;
   }
