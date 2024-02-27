@@ -5,13 +5,13 @@ typedef struct {
   float **data;
   int rows;
   int cols;
-} FloatMatrix;
+} Matrix;
 
-FloatMatrix *createFloatMatrix(int rows, int cols, _Bool initWithZero);
-void freeFloatMatrix(const FloatMatrix *matrix);
-void setElement(FloatMatrix *mat, int row, int col, float value);
-float getElement(FloatMatrix *mat, int row, int col);
-FloatMatrix *multiplyMatrices(FloatMatrix *mat1, FloatMatrix *mat2);
-void printMatrix(const FloatMatrix *matrix);
+Matrix *createMatrix(int rows, int cols, _Bool initWithZero);
+void freeMatrix(const Matrix *matrix);
+void setElement(Matrix *mat, int row, int col, float value);
+float getElement(Matrix *mat, int row, int col);
+Matrix *multiplyMatrices(Matrix *mat1, Matrix *mat2);
+void printMatrix(const Matrix *matrix);
 
 #endif
