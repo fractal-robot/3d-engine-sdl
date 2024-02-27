@@ -2,26 +2,9 @@
 #define STRUCTS_H
 
 typedef struct {
-  float x;
-  float y;
-} Mat2d;
-
-typedef struct {
-  float x;
-  float y;
-  float z;
-} Mat3d;
-
-typedef struct {
-  float x;
-  float y;
-  float hue;
-} Mat2dCarryHue;
-
-typedef struct {
-  char red;
-  char green;
-  char blue;
+  short red;
+  short green;
+  short blue;
 } Color;
 
 typedef struct {

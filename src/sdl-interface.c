@@ -3,33 +3,36 @@
 
 #include "sdl-interface.h"
 #include "definition.h"
+#include "matrix.h"
 #include "structs.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <assert.h>
 
 #if (SCALE_FACTOR & (SCALE_FACTOR - 1)) != 0
-#error "SCALE_FACTOR must be a power of two."
+#error "[ERROR] SCALE_FACTOR must be a power of 2.\n"
 #endif
 #if (WINDOW_WIDTH & (WINDOW_WIDTH - 1)) != 0
-#error "WINDOW_WIDTH must be a power of two."
+#error "[ERROR] WINDOW_WIDTH must be a power of 2.\n"
 #endif
 
-void setPixel(SDL_Renderer *renderer, Mat2d coord, const Color *color) {
-  // (0, 0) is the center of the screen
-  // y is increasing to the top of the screen
-  //  assert(coord.x < RENDER_WIDTH && coord.y < RENDER_WIDTH);
+void setPixel(SDL_Renderer *renderer, const Mat *coord, const Color *color) {
+  // (0, 0): center of the canva
+  // cartesian coordinates
 
-  coord.x = ((int)(RENDER_WIDTH / 2) + coord.x) * SCALE_FACTOR;
-  coord.y = ((int)(RENDER_WIDTH / 2) - coord.y) * SCALE_FACTOR;
-  const int scaleOffset = SCALE_FACTOR / 2;
+  assert(coord->rows == 1 && coord->cols == 2);
+
+  const int pX = ((int)(RENDER_WIDTH / 2) + coord->data[0][0]) * SCALE_FACTOR;
+  const int pY = ((int)(RENDER_WIDTH / 2) - coord->data[0][1]) * SCALE_FACTOR;
+
+  const int scaleOffset = SCALE_FACTOR / 2; // / 2 because we want (0,0) to be
+                                            // centered on the screen
 
   SDL_SetRenderDrawColor(renderer, color->red, color->green, color->blue, 1);
-  for (int x = -scaleOffset; x <= scaleOffset; ++x) {
-    for (int y = -scaleOffset; y <= scaleOffset; ++y) {
-      SDL_RenderDrawPoint(renderer, coord.x + x, coord.y + y);
-    }
-  }
+  for (int x = -scaleOffset; x <= scaleOffset; ++x)
+    for (int y = -scaleOffset; y <= scaleOffset; ++y)
+      SDL_RenderDrawPoint(renderer, pX + x, pY + y);
 }
 
 void clearCanva(SDL_Renderer *renderer) {

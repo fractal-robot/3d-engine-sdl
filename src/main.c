@@ -1,8 +1,8 @@
 #include "definition.h"
-#include "instances.h"
+#include "helper.h"
 #include "matrix.h"
-#include "models.h"
 #include "sdl-interface.h"
+#include "structs.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
@@ -28,31 +28,21 @@ int main(void) {
 
   clearCanva(renderer);
 
-  Model *cube = createModelCube();
+  Color blue = BLUE;
 
-  Instance instance = {cube, (Mat3d){0, 0, 0}};
-  renderInstance(renderer, &instance);
+  Mat *p1 = createMat(1, 2, false);
+  p1->data[0][0] = 20;
+  p1->data[0][1] = -20;
 
-  FloatMatrix *m1 = createFloatMatrix(2, 2, true);
-  FloatMatrix *m2 = createFloatMatrix(2, 2, true);
+  Mat *p2 = createMat(1, 2, false);
+  p2->data[0][0] = -60;
+  p2->data[0][1] = 30;
 
-  setElement(m1, 0, 0, 1);
-  setElement(m1, 0, 1, 2);
-  setElement(m1, 1, 0, 3);
-  setElement(m1, 1, 1, 4);
+  Mat *p3 = createMat(1, 2, false);
+  p3->data[0][0] = 20;
+  p3->data[0][1] = 50;
 
-  setElement(m2, 0, 0, 5);
-  setElement(m2, 0, 1, 6);
-  setElement(m2, 1, 0, 7);
-  setElement(m2, 1, 1, 8);
-
-  printf("he %f\n", getElement(m1, 1, 1));
-
-  printMatrix(m1);
-  printMatrix(m2);
-
-  FloatMatrix *m3 = multiplyMatrices(m1, m2);
-  printMatrix(m3);
+  drawShadeTriangle(renderer, p2, p1, p3, 0.0, 0.2, 1, &blue);
 
   while (1) {
     SDL_RenderPresent(renderer);

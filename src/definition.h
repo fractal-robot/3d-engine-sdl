@@ -12,4 +12,4 @@
 
 #define WINDOW_WIDTH 1024 // should be a power of 2
 #define SCALE_FACTOR 8    // should be a power of 2
-#define RENDER_WIDTH (WINDOW_WIDTH / SCALE_FACTOR)
+#define RENDER_WIDTH ((int)(WINDOW_WIDTH / SCALE_FACTOR))

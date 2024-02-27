@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Matrix *createMatrix(int rows, int cols, _Bool initWithZero) {
-  Matrix *mat = malloc(sizeof(Matrix));
+Mat *createMat(int rows, int cols, _Bool initWithZero) {
+  Mat *mat = malloc(sizeof(Mat));
   if (mat == NULL) {
     printf("[ERROR] Failed to allocate matrix.\n");
     exit(EXIT_FAILURE);
@@ -32,14 +32,14 @@ Matrix *createMatrix(int rows, int cols, _Bool initWithZero) {
   return mat;
 }
 
-void freeMatrix(const Matrix *matrix) {
+void freeMat(const Mat *matrix) {
   for (int i = 0; i < matrix->rows; ++i)
     free(matrix->data[i]);
   free(matrix->data);
   free((void *)matrix);
 }
 
-void setElement(Matrix *mat, int row, int col, float value) {
+void setElement(Mat *mat, int row, int col, float value) {
   if (row < 0 || row >= mat->rows || col < 0 || col >= mat->cols) {
     printf("[ERROR] Failed to set element to matrix: index out of bounds.\n");
     exit(EXIT_FAILURE);
@@ -48,7 +48,7 @@ void setElement(Matrix *mat, int row, int col, float value) {
   mat->data[row][col] = value;
 }
 
-float getElement(Matrix *mat, int row, int col) {
+float getElement(Mat *mat, int row, int col) {
   if (row < 0 || row >= mat->rows || col < 0 || col >= mat->cols) {
     printf("[ERROR] Failed to get element from matrix: index out of bounds.\n");
     exit(EXIT_FAILURE);
@@ -57,15 +57,13 @@ float getElement(Matrix *mat, int row, int col) {
   return mat->data[row][col];
 }
 
-Matrix *multiplyMatrices(Matrix *mat1, Matrix *mat2) {
+Mat *multiplyMat(Mat *mat1, Mat *mat2) {
   if (mat1->cols != mat2->rows) {
-    printf("[ERROR] Failed to multiply matrices: wrong dimensions\n.");
+    printf("[ERROR] Failed to multiply matrices: incompatible dimensions.\n");
     exit(EXIT_FAILURE);
   }
 
-  printf("[DEBUG] Creating new matrix of size %ix%i.\n", mat1->rows,
-         mat2->cols);
-  Matrix *result = createMatrix(mat1->rows, mat2->cols, 1);
+  Mat *result = createMat(mat1->rows, mat2->cols, 1);
 
   for (int i = 0; i < mat1->rows; ++i)
     for (int j = 0; j < mat2->cols; ++j)
@@ -75,7 +73,7 @@ Matrix *multiplyMatrices(Matrix *mat1, Matrix *mat2) {
   return result;
 }
 
-void printMatrix(const Matrix *matrix) {
+void printMat(const Mat *matrix) {
   for (int i = 0; i < matrix->rows; ++i) {
     for (int j = 0; j < matrix->cols; ++j)
       printf("%10f", matrix->data[i][j]);

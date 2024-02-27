@@ -12,7 +12,7 @@ typedef struct {
 Stack *createStack(int capacity);
 int isEmpty(Stack *stack);
 void *pop(Stack *stack);
-void deleteStack(Stack *stack);
+void freeStack(Stack *stack);
 Stack *initializeStack(void *array, int arraySize);
 void append(Stack *appendTo, Stack *appendFrom);
 void push(Stack *stack, void *data);

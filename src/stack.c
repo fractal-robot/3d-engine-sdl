@@ -41,7 +41,7 @@ void *pop(Stack *stack) {
   return stack->items[stack->top--];
 }
 
-void deleteStack(Stack *stack) {
+void freeStack(Stack *stack) {
   free(stack->items);
   free(stack);
 }
@@ -58,7 +58,7 @@ Stack *initializeStack(void *array, int arraySize) {
 
 void append(Stack *appendTo, Stack *appendFrom) {
   if (isEmpty(appendFrom)) {
-    deleteStack(appendFrom);
+    freeStack(appendFrom);
     return;
   }
 
@@ -68,7 +68,7 @@ void append(Stack *appendTo, Stack *appendFrom) {
   if (appendTo->items == NULL) {
     // Handle memory allocation failure
     printf("Memory allocation failed.\n");
-    deleteStack(appendFrom);
+    freeStack(appendFrom);
     return;
   }
 
@@ -77,7 +77,7 @@ void append(Stack *appendTo, Stack *appendFrom) {
   appendTo->top += appendFrom->top + 1;
   appendTo->capacity += appendFrom->capacity;
 
-  deleteStack(appendFrom);
+  freeStack(appendFrom);
 }
 
 void *getStackItem(Stack *stack, int index) {

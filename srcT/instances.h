@@ -2,12 +2,12 @@
 #define INSTANCES_C
 
 #include "models.h"
-#include "structs.h"
+#include "transform.h"
 
 typedef struct {
   Model *model;
-  Mat3d translation; // make sure to make the translation last
-  float scale;
+  Scale scale;
+  Translate translate;
 
 } Instance;
 

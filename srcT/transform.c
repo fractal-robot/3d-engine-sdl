@@ -24,28 +24,24 @@
 
 // https://wikimedia.org/api/rest_v1/media/math/render/svg/a6821937d5031de282a190f75312353c970aa2df
 
+#include "transform.h"
 #include "matrix.h"
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-Matrix *translate(Matrix *point, Matrix *translationMatrix) {
-  if (translationMatrix->rows != 1 || translationMatrix->cols != 4 ||
-      translationMatrix->data[1][4] != 0) {
-    printf("[ERROR] Incompatible translation matrix for translation.");
-    exit(EXIT_FAILURE);
-  }
-  if (point->rows != 1 || point->cols != 4 || point->data[1][4] != 1) {
-    printf("[ERROR] Incompatible point for translation.");
-    exit(EXIT_FAILURE);
-  }
-
+Matrix *translate(Matrix *point, const Translate *translate) {
+  Matrix *translationMatrix = createMatrix(1, 4, false);
+  translationMatrix->data[0][1] = translate->x;
+  translationMatrix->data[0][2] = translate->y;
+  translationMatrix->data[0][3] = translate->z;
+  translationMatrix->data[0][4] = 1;
   return multiplyMatrices(translationMatrix, point);
 }
 
-Matrix *scale(Matrix *point, Matrix *scalarMatrix) {
-  if (scalarMatrix->rows != 4 || scalarMatrix->cols != 4) {
-    printf("[ERROR] Wrong dimension of scalar matrix for scaling.");
-    exit(EXIT_FAILURE);
-  }
+Matrix *scale(Matrix *point, const Scale *scale) {
+  Matrix *scalarMatrix = createMatrix(4, 4, true);
+  scalarMatrix->data[0][0] = scale->x;
+  scalarMatrix->data[1][1] = scale->y;
+  scalarMatrix->data[2][2] = scale->z;
+  scalarMatrix->data[3][3] = 1;
+  return multiplyMatrices(scalarMatrix, point);
 }
