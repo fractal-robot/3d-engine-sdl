@@ -57,17 +57,17 @@ Mat *rotate(Mat *point, const float3d *rotation) {
   float z = degToRad(rotation->z);
 
   Mat *rotationMat = createMat(4, 4, false);
-  rotationMat->data[0][0] = cos(z) * cos(y);
-  rotationMat->data[0][1] = cos(z) * sin(y) * sin(x) - sin(z) * cos(x);
-  rotationMat->data[0][2] = cos(z) * sin(y) * cos(x) + sin(z) * sin(x);
+  rotationMat->data[0][0] = cos(y) * cos(z);
+  rotationMat->data[0][1] = sin(x) * sin(y) * cos(z) - cos(x) * sin(z);
+  rotationMat->data[0][2] = cos(x) * sin(y) * cos(z) + sin(x) * sin(z);
   rotationMat->data[0][3] = 0;
-  rotationMat->data[1][0] = sin(z) * cos(y);
-  rotationMat->data[1][1] = sin(z) * sin(y) * sin(x) + cos(z) * cos(x);
-  rotationMat->data[1][2] = sin(z) * sin(y) * cos(x) - cos(y) * sin(x);
+  rotationMat->data[1][0] = cos(y) * sin(z);
+  rotationMat->data[1][1] = sin(x) * sin(y) * sin(z) + cos(x) * cos(z);
+  rotationMat->data[1][2] = cos(x) * sin(y) * sin(z) - sin(x) * cos(z);
   rotationMat->data[1][3] = 0;
   rotationMat->data[2][0] = -sin(y);
-  rotationMat->data[2][1] = cos(y) * sin(x);
-  rotationMat->data[2][2] = cos(y) * cos(x);
+  rotationMat->data[2][1] = sin(x) * cos(y);
+  rotationMat->data[2][2] = cos(x) * cos(y);
   rotationMat->data[2][3] = 0;
   rotationMat->data[3][0] = 0;
   rotationMat->data[3][1] = 0;

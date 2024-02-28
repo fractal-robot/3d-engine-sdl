@@ -10,6 +10,8 @@
 #include <SDL2/SDL_video.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 Color shadeColor(const Color *col, float shade) {
   return (Color){col->red * shade, col->green * shade, col->blue * shade};
@@ -77,10 +79,12 @@ void drawLine(SDL_Renderer *renderer, Mat *p0, Mat *p1, const Color *color) {
     Stack *ys = interpolate(p0->data[0][0], p0->data[1][0], p1->data[0][0],
                             p1->data[1][0]);
     for (int x = p0->data[0][0]; x <= p1->data[0][0]; ++x) {
-      int y = *(int *)getStackItem(ys, x - p0->data[0][0]);
-      pixelCoord->data[0][0] = x;
-      pixelCoord->data[1][0] = y;
-      setPixel(renderer, pixelCoord, color);
+      if (!(x - p0->data[0][0] < 0 || x - p0->data[0][0] >= ys->top)) {
+        int y = *(int *)getStackItem(ys, x - p0->data[0][0]);
+        pixelCoord->data[0][0] = x;
+        pixelCoord->data[1][0] = y;
+        setPixel(renderer, pixelCoord, color);
+      }
     }
     freeStack(ys);
 
@@ -91,10 +95,12 @@ void drawLine(SDL_Renderer *renderer, Mat *p0, Mat *p1, const Color *color) {
     Stack *xs = interpolate(p0->data[1][0], p0->data[0][0], p1->data[1][0],
                             p1->data[0][0]);
     for (int y = p0->data[1][0]; y <= p1->data[1][0]; ++y) {
-      int x = *(int *)getStackItem(xs, y - p0->data[1][0]);
-      pixelCoord->data[0][0] = x;
-      pixelCoord->data[1][0] = y;
-      setPixel(renderer, pixelCoord, color);
+      if (!(y - p0->data[1][0] < 0 || y - p0->data[1][0] >= xs->top)) {
+        int x = *(int *)getStackItem(xs, y - p0->data[1][0]);
+        pixelCoord->data[0][0] = x;
+        pixelCoord->data[1][0] = y;
+        setPixel(renderer, pixelCoord, color);
+      }
     }
     freeStack(xs);
   }

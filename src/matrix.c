@@ -36,12 +36,9 @@ Mat *createMat(int rows, int cols, _Bool initWithZero) {
 }
 
 void assignArray(Mat *mat, float *values) {
-  printf("Math rows & cols %i %i \n", mat->rows, mat->cols);
   for (int i = 0; i < mat->rows; ++i)
-    for (int j = 0; j < mat->cols; ++j) {
-      printf("IT %i %i\n", i, j);
+    for (int j = 0; j < mat->cols; ++j)
       mat->data[i][j] = values[i * mat->cols + j];
-    }
 }
 
 void freeMat(const Mat *matrix) {

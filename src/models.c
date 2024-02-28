@@ -24,10 +24,10 @@ Model *createModelCube() {
   vertices[1] = (Vertex){-1, 1, 1};
   vertices[2] = (Vertex){-1, -1, 1};
   vertices[3] = (Vertex){1, -1, 1};
-  vertices[4] = (Vertex){1, 1, 2};
-  vertices[5] = (Vertex){-1, 1, 2};
-  vertices[6] = (Vertex){-1, -1, 2};
-  vertices[7] = (Vertex){1, -1, 2};
+  vertices[4] = (Vertex){1, 1, -1};
+  vertices[5] = (Vertex){-1, 1, -1};
+  vertices[6] = (Vertex){-1, -1, -1};
+  vertices[7] = (Vertex){1, -1, -1};
 
   Model *cube = malloc(sizeof(Model));
 

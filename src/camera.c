@@ -35,6 +35,4 @@ void setCameraProp(Camera *c) {
   float *posArrPtr = *posArr;
 
   assignArray(c->lookAt, posArrPtr);
-
-  printMat(c->lookAt);
 }

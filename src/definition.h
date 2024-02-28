@@ -10,6 +10,7 @@
 #define D 1
 #define VIEWPORT_WIDTH 1
 
+#define CAP_FPS 60
 #define WINDOW_WIDTH 1024 // should be a power of 2
 #define SCALE_FACTOR 1    // should be a power of 2
 #define RENDER_WIDTH (WINDOW_WIDTH / SCALE_FACTOR)

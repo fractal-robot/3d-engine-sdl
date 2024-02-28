@@ -13,7 +13,7 @@
 void renderInstance(SDL_Renderer *renderer, Instance *instance,
                     Camera *camera) {
   if (instance->model == NULL) {
-    printf("[ERROR] An instance does not point to any object.");
+    printf("[ERROR] Instance does not point to any object.");
     exit(EXIT_FAILURE);
   }
 
@@ -27,8 +27,8 @@ void renderInstance(SDL_Renderer *renderer, Instance *instance,
     vertexPos->data[2][0] = instance->model->vertices[v].z;
     vertexPos->data[3][0] = 1;
 
-    vertexPos = scale(vertexPos, &instance->s);
     vertexPos = rotate(vertexPos, &instance->r);
+    vertexPos = scale(vertexPos, &instance->s);
     translate(vertexPos, &instance->t); // will change vertexPos
 
     vertexPos = multiplyMat(camera->lookAt, vertexPos);
