@@ -18,16 +18,26 @@ void renderModel(SDL_Renderer *renderer, Model *model) {
     vertexPos->data[2][0] = model->vertices[v].z;
     vertexPos->data[3][0] = 1;
 
-    Translate translation = {-0.5, 0, 6};
-    translate(vertexPos, &translation);
+    Scale scalar = {1, 1, 1};
+    Mat *scaled = scale(vertexPos, &scalar);
 
-    // Scale scalar = {1, 1, 1};
-    // Mat *newVertexPos = scale(vertexPos, &scalar);
+    printMat(scaled);
 
-    vertexPos = projectVertex(vertexPos);
-    vertexPos->rows = 2;
-    vertexPos->cols = 1;
-    push(projected, vertexPos);
+    Rotate rotation = {10, 0, 0};
+    Mat *rotated = rotate(scaled, &rotation);
+
+    printMat(rotated);
+
+    Translate translation = {0, 0, 4};
+    translate(rotated, &translation);
+
+    rotated = projectVertex(rotated);
+    rotated->rows = 2;
+    rotated->cols = 1;
+
+    printMat(rotated);
+
+    push(projected, rotated);
   }
 
   for (int t = 0; t < model->trianglesCount; ++t) {

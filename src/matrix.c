@@ -32,6 +32,12 @@ Mat *createMat(int rows, int cols, _Bool initWithZero) {
   return mat;
 }
 
+void assignArray(Mat *mat, float **values) {
+  for (int i = 0; i < mat->rows; ++i)
+    for (int j = 0; j < mat->cols; ++j)
+      mat->data[i][j] = values[i][j];
+}
+
 void freeMat(const Mat *matrix) {
   for (int i = 0; i < matrix->rows; ++i)
     free(matrix->data[i]);
@@ -76,9 +82,13 @@ Mat *multiplyMat(Mat *mat1, Mat *mat2) {
 }
 
 void printMat(const Mat *matrix) {
+  printf("\n\n---\n");
+
   for (int i = 0; i < matrix->rows; ++i) {
     for (int j = 0; j < matrix->cols; ++j)
       printf("%10f", matrix->data[i][j]);
     printf("\n");
   }
+
+  printf("\n---\n\n");
 }
