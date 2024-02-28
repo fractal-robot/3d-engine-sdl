@@ -28,15 +28,14 @@
 #include "matrix.h"
 #include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
 
-void translate(Mat *point, const Translate *translate) {
+void translate(Mat *point, const float3d *translate) {
   point->data[0][0] += translate->x;
   point->data[1][0] += translate->y;
   point->data[2][0] += translate->z;
 }
 
-Mat *scale(Mat *point, const Scale *scale) {
+Mat *scale(Mat *point, const float3d *scale) {
   Mat *scalarMat = createMat(4, 4, true);
   scalarMat->data[0][0] = scale->x;
   scalarMat->data[1][1] = scale->y;
@@ -49,7 +48,7 @@ Mat *scale(Mat *point, const Scale *scale) {
 
 float degToRad(float deg) { return deg * M_PI / 180; }
 
-Mat *rotate(Mat *point, const Rotate *rotation) {
+Mat *rotate(Mat *point, const float3d *rotation) {
   // this implement homogeneous rotation matrix, so we cant rotate 3 angles at a
   // time
 

@@ -1,53 +1,8 @@
-
 #include "models.h"
 #include "definition.h"
-#include "helper.h"
-#include "matrix.h"
-#include "stack.h"
 #include "structs.h"
-#include "transform.h"
 #include <stdbool.h>
 #include <stdio.h>
-
-void renderModel(SDL_Renderer *renderer, Model *model) {
-  Stack *projected = createStack(model->verticesCount);
-  for (int v = 0; v < model->verticesCount; ++v) {
-    Mat *vertexPos = createMat(4, 1, false);
-    vertexPos->data[0][0] = model->vertices[v].x;
-    vertexPos->data[1][0] = model->vertices[v].y;
-    vertexPos->data[2][0] = model->vertices[v].z;
-    vertexPos->data[3][0] = 1;
-
-    Scale scalar = {1, 1, 1};
-    Mat *scaled = scale(vertexPos, &scalar);
-
-    printMat(scaled);
-
-    Rotate rotation = {10, 0, 0};
-    Mat *rotated = rotate(scaled, &rotation);
-
-    printMat(rotated);
-
-    Translate translation = {0, 0, 4};
-    translate(rotated, &translation);
-
-    rotated = projectVertex(rotated);
-    rotated->rows = 2;
-    rotated->cols = 1;
-
-    printMat(rotated);
-
-    push(projected, rotated);
-  }
-
-  for (int t = 0; t < model->trianglesCount; ++t) {
-    Triangle triangle = model->trianglesList[t];
-    Mat *v1 = getStackItem(projected, triangle.a);
-    Mat *v2 = getStackItem(projected, triangle.b);
-    Mat *v3 = getStackItem(projected, triangle.c);
-    drawWireframeTriangle(renderer, v1, v2, v3, &triangle.color);
-  }
-}
 
 Model *createModelCube() {
   Triangle *trianglesList = malloc(12 * sizeof(Triangle));

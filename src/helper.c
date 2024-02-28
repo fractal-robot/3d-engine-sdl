@@ -10,7 +10,6 @@
 #include <SDL2/SDL_video.h>
 #include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 Color shadeColor(const Color *col, float shade) {
   return (Color){col->red * shade, col->green * shade, col->blue * shade};

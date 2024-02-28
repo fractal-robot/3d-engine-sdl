@@ -1,4 +1,7 @@
 #include "matrix.h"
+#include <assert.h>
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,10 +35,13 @@ Mat *createMat(int rows, int cols, _Bool initWithZero) {
   return mat;
 }
 
-void assignArray(Mat *mat, float **values) {
+void assignArray(Mat *mat, float *values) {
+  printf("Math rows & cols %i %i \n", mat->rows, mat->cols);
   for (int i = 0; i < mat->rows; ++i)
-    for (int j = 0; j < mat->cols; ++j)
-      mat->data[i][j] = values[i][j];
+    for (int j = 0; j < mat->cols; ++j) {
+      printf("IT %i %i\n", i, j);
+      mat->data[i][j] = values[i * mat->cols + j];
+    }
 }
 
 void freeMat(const Mat *matrix) {
@@ -91,4 +97,42 @@ void printMat(const Mat *matrix) {
   }
 
   printf("\n---\n\n");
+}
+
+void normalizeMat(Mat *mat) {
+  assert(mat->cols == 1);
+
+  float length = 0.0;
+  for (int i = 0; i < mat->rows; ++i)
+    length += mat->data[i][0] * mat->data[i][0];
+  length = sqrt(length);
+
+  for (int i = 0; i < mat->rows; ++i)
+    mat->data[i][0] = mat->data[i][0] / length;
+}
+
+Mat *crossMat(Mat *u, Mat *v) {
+  assert(u->rows == 3 && v->rows == 3 && u->cols == 1 && v->cols == 1);
+
+  Mat *product = createMat(3, 1, false);
+
+  product->data[0][0] =
+      u->data[1][0] * v->data[2][0] - u->data[2][0] * v->data[1][0];
+  product->data[1][0] =
+      u->data[2][0] * v->data[0][0] - u->data[0][0] * v->data[2][0];
+  product->data[2][0] =
+      u->data[0][0] * v->data[1][0] - u->data[1][0] * v->data[0][0];
+
+  return product;
+}
+
+Mat *substractMat(Mat *u, Mat *v) {
+  assert(u->rows == v->rows && u->cols == 1 && v->cols == 1);
+
+  Mat *substracted = createMat(u->rows, 1, false);
+
+  for (int i = 0; i < u->rows; ++i)
+    substracted->data[i][0] = u->data[i][0] - v->data[i][0];
+
+  return substracted;
 }

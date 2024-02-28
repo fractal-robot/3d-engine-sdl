@@ -1,9 +1,10 @@
+#include "camera.h"
 #include "definition.h"
-#include "helper.h"
+#include "instances.h"
 #include "matrix.h"
 #include "models.h"
 #include "sdl-interface.h"
-#include "structs.h"
+#include "transform.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
@@ -29,8 +30,28 @@ int main(void) {
 
   clearCanva(renderer);
 
+  Camera camera;
+
+  {
+    Mat *pos = createMat(3, 0, false);
+    pos->data[0][0] = .5;
+    pos->data[1][0] = 0;
+    pos->data[2][0] = -5;
+
+    camera.pos = pos;
+  }
+
+  setCameraProp(&camera);
+
   Model *model = createModelCube();
-  renderModel(renderer, model);
+  Instance instance = {
+      instance.model = model,
+      instance.s = (float3d){1, 1, 1},
+      instance.t = (float3d){-2, 0, 0},
+      instance.r = (float3d){0, 0, 0},
+  };
+
+  renderInstance(renderer, &instance, &camera);
 
   while (1) {
     SDL_RenderPresent(renderer);

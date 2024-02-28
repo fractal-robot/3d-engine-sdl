@@ -13,5 +13,8 @@ void setElement(Mat *mat, int row, int col, float value);
 float getElement(Mat *mat, int row, int col);
 Mat *multiplyMat(Mat *mat1, Mat *mat2);
 void printMat(const Mat *matrix);
-
+void normalizeMat(Mat *mat);
+Mat *crossMat(Mat *u, Mat *v);
+Mat *substractMat(Mat *u, Mat *v);
+void assignArray(Mat *mat, float *values);
 #endif
