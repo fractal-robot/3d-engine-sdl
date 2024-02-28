@@ -5,8 +5,14 @@
 #include <SDL2/SDL_render.h>
 
 typedef struct {
+  float x;
+  float y;
+  float z;
+} Vertex;
+
+typedef struct {
   Triangle *trianglesList;
-  Mat3d *vertices;
+  Vertex *vertices;
   int trianglesCount;
   int verticesCount;
 } Model;

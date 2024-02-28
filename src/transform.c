@@ -28,20 +28,19 @@
 #include "matrix.h"
 #include <stdbool.h>
 
-Matrix *translate(Matrix *point, const Translate *translate) {
-  Matrix *translationMatrix = createMatrix(1, 4, false);
-  translationMatrix->data[0][1] = translate->x;
-  translationMatrix->data[0][2] = translate->y;
-  translationMatrix->data[0][3] = translate->z;
-  translationMatrix->data[0][4] = 1;
-  return multiplyMatrices(translationMatrix, point);
+void translate(Mat *point, const Translate *translate) {
+  point->data[0][0] += translate->x;
+  point->data[1][0] += translate->y;
+  point->data[2][0] += translate->z;
 }
 
-Matrix *scale(Matrix *point, const Scale *scale) {
-  Matrix *scalarMatrix = createMatrix(4, 4, true);
-  scalarMatrix->data[0][0] = scale->x;
-  scalarMatrix->data[1][1] = scale->y;
-  scalarMatrix->data[2][2] = scale->z;
-  scalarMatrix->data[3][3] = 1;
-  return multiplyMatrices(scalarMatrix, point);
+Mat *scale(Mat *point, const Scale *scale) {
+  Mat *scalarMat = createMat(4, 4, true);
+  scalarMat->data[0][0] = scale->x;
+  scalarMat->data[1][1] = scale->y;
+  scalarMat->data[2][2] = scale->z;
+  scalarMat->data[3][3] = 1;
+  Mat *newPoint = multiplyMat(scalarMat, point);
+  freeMat(point);
+  return newPoint;
 }

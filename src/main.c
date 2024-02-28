@@ -1,6 +1,7 @@
 #include "definition.h"
 #include "helper.h"
 #include "matrix.h"
+#include "models.h"
 #include "sdl-interface.h"
 #include "structs.h"
 #include <SDL2/SDL.h>
@@ -28,21 +29,8 @@ int main(void) {
 
   clearCanva(renderer);
 
-  Color blue = BLUE;
-
-  Mat *p1 = createMat(1, 2, false);
-  p1->data[0][0] = 20;
-  p1->data[0][1] = -20;
-
-  Mat *p2 = createMat(1, 2, false);
-  p2->data[0][0] = -60;
-  p2->data[0][1] = 30;
-
-  Mat *p3 = createMat(1, 2, false);
-  p3->data[0][0] = 20;
-  p3->data[0][1] = 50;
-
-  drawShadeTriangle(renderer, p2, p1, p3, 0.0, 0.2, 1, &blue);
+  Model *model = createModelCube();
+  renderModel(renderer, model);
 
   while (1) {
     SDL_RenderPresent(renderer);

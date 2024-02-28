@@ -60,6 +60,8 @@ float getElement(Mat *mat, int row, int col) {
 Mat *multiplyMat(Mat *mat1, Mat *mat2) {
   if (mat1->cols != mat2->rows) {
     printf("[ERROR] Failed to multiply matrices: incompatible dimensions.\n");
+    printf("First matrix %i %i \n", mat1->rows, mat1->cols);
+    printf("Second matrix %i %i \n", mat2->rows, mat2->cols);
     exit(EXIT_FAILURE);
   }
 

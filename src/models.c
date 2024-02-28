@@ -2,22 +2,39 @@
 #include "models.h"
 #include "definition.h"
 #include "helper.h"
+#include "matrix.h"
+#include "stack.h"
 #include "structs.h"
+#include "transform.h"
+#include <stdbool.h>
+#include <stdio.h>
 
 void renderModel(SDL_Renderer *renderer, Model *model) {
   Stack *projected = createStack(model->verticesCount);
   for (int v = 0; v < model->verticesCount; ++v) {
-    Mat3d translated = translate(model->vertices[v]);
-    Mat2d *vertex = malloc(sizeof(Mat2d));
-    *vertex = projectVertex(&translated);
-    push(projected, vertex);
+    Mat *vertexPos = createMat(4, 1, false);
+    vertexPos->data[0][0] = model->vertices[v].x;
+    vertexPos->data[1][0] = model->vertices[v].y;
+    vertexPos->data[2][0] = model->vertices[v].z;
+    vertexPos->data[3][0] = 1;
+
+    Translate translation = {-0.5, 0, 6};
+    translate(vertexPos, &translation);
+
+    // Scale scalar = {1, 1, 1};
+    // Mat *newVertexPos = scale(vertexPos, &scalar);
+
+    vertexPos = projectVertex(vertexPos);
+    vertexPos->rows = 2;
+    vertexPos->cols = 1;
+    push(projected, vertexPos);
   }
 
   for (int t = 0; t < model->trianglesCount; ++t) {
     Triangle triangle = model->trianglesList[t];
-    Mat2d v1 = *(Mat2d *)getStackItem(projected, triangle.a);
-    Mat2d v2 = *(Mat2d *)getStackItem(projected, triangle.b);
-    Mat2d v3 = *(Mat2d *)getStackItem(projected, triangle.c);
+    Mat *v1 = getStackItem(projected, triangle.a);
+    Mat *v2 = getStackItem(projected, triangle.b);
+    Mat *v3 = getStackItem(projected, triangle.c);
     drawWireframeTriangle(renderer, v1, v2, v3, &triangle.color);
   }
 }
@@ -37,15 +54,15 @@ Model *createModelCube() {
   trianglesList[10] = (Triangle){2, 6, 7, CYAN};
   trianglesList[11] = (Triangle){2, 7, 3, CYAN};
 
-  Mat3d *vertices = malloc(8 * sizeof(Mat3d));
-  vertices[0] = (Mat3d){1, 1, 1};
-  vertices[1] = (Mat3d){-1, 1, 1};
-  vertices[2] = (Mat3d){-1, -1, 1};
-  vertices[3] = (Mat3d){1, -1, 1};
-  vertices[4] = (Mat3d){1, 1, -1};
-  vertices[5] = (Mat3d){-1, 1, -1};
-  vertices[6] = (Mat3d){-1, -1, -1};
-  vertices[7] = (Mat3d){1, -1, -1};
+  Vertex *vertices = malloc(8 * sizeof(Vertex));
+  vertices[0] = (Vertex){1, 1, 1};
+  vertices[1] = (Vertex){-1, 1, 1};
+  vertices[2] = (Vertex){-1, -1, 1};
+  vertices[3] = (Vertex){1, -1, 1};
+  vertices[4] = (Vertex){1, 1, 2};
+  vertices[5] = (Vertex){-1, 1, 2};
+  vertices[6] = (Vertex){-1, -1, 2};
+  vertices[7] = (Vertex){1, -1, 2};
 
   Model *cube = malloc(sizeof(Model));
 

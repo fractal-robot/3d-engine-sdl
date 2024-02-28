@@ -11,6 +11,6 @@ typedef struct {
 
 } Instance;
 
-void renderInstance(SDL_Renderer *renderer, Instance *instance);
+// void renderInstance(SDL_Renderer *renderer, Instance *instance);
 
 #endif

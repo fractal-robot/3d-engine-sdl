@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
 void renderInstance(SDL_Renderer *renderer, Instance *instance) {
   if (instance->model == NULL) {
     printf("[ERROR] An instance does not point to any object.");
@@ -28,3 +29,4 @@ void renderInstance(SDL_Renderer *renderer, Instance *instance) {
     drawWireframeTriangle(renderer, v1, v2, v3, &triangle.color);
   }
 }
+*/

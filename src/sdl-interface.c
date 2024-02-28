@@ -21,10 +21,10 @@ void setPixel(SDL_Renderer *renderer, const Mat *coord, const Color *color) {
   // (0, 0): center of the canva
   // cartesian coordinates
 
-  assert(coord->rows == 1 && coord->cols == 2);
+  assert(coord->rows == 2 && coord->cols == 1);
 
   const int pX = ((int)(RENDER_WIDTH / 2) + coord->data[0][0]) * SCALE_FACTOR;
-  const int pY = ((int)(RENDER_WIDTH / 2) - coord->data[0][1]) * SCALE_FACTOR;
+  const int pY = ((int)(RENDER_WIDTH / 2) - coord->data[1][0]) * SCALE_FACTOR;
 
   const int scaleOffset = SCALE_FACTOR / 2; // / 2 because we want (0,0) to be
                                             // centered on the screen
