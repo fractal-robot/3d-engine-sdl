@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include "structs.h"
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
@@ -121,6 +122,12 @@ Mat *crossMat(Mat *u, Mat *v) {
       u->data[0][0] * v->data[1][0] - u->data[1][0] * v->data[0][0];
 
   return product;
+}
+
+float dotProduct(Mat *point, float3d plane) {
+  assert(point->rows == 4 && point->cols == 1);
+  return point->data[0][0] * plane.x + point->data[1][0] * plane.y +
+         point->data[2][0] * plane.y;
 }
 
 Mat *substractMat(Mat *u, Mat *v) {

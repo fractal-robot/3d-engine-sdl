@@ -8,15 +8,19 @@
 
 typedef struct {
   Model *model;
+  Stack *projected;
   float3d s;                  // scaling
   float3d t;                  // translation
   float3d r;                  // rotation (right-handed)
+  float3d pv;                 // previous translations
   float boundingSphereRadius; // the center is t;
 } Instance;
 
-Model *initInstance(Model *model);
-void renderInstances(SDL_Renderer *renderer, Stack *instances, Camera *camera);
-void renderInstance(SDL_Renderer *renderer, Instance *instance, Camera *camera);
 void calculateInstanceBoundingSphere(Instance *instance);
+void updateInstance(Instance *instance, Camera *camera);
+void renderInstance(SDL_Renderer *renderer, Instance *instance);
+
+void renderInstances(SDL_Renderer *renderer, Stack *instances);
+void updateInstances(Camera *camera, Stack *instances);
 
 #endif

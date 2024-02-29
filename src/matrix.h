@@ -1,6 +1,8 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "structs.h"
+
 typedef struct {
   float **data;
   int rows;
@@ -17,4 +19,6 @@ void normalizeMat(Mat *mat);
 Mat *crossMat(Mat *u, Mat *v);
 Mat *substractMat(Mat *u, Mat *v);
 void assignArray(Mat *mat, float *values);
+float dotProduct(Mat *point, float3d plane);
+
 #endif

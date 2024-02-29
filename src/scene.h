@@ -7,4 +7,6 @@ typedef struct {
   Stack *instances;
 } Scene;
 
+Scene *createScene();
+
 #endif

@@ -1,9 +1,11 @@
 #include "camera.h"
+#include "clipping.h"
 #include "definition.h"
 #include "helper.h"
 #include "instances.h"
 #include "matrix.h"
 #include "models.h"
+#include "scene.h"
 #include "sdl-interface.h"
 #include "stack.h"
 #include <SDL2/SDL.h>
@@ -48,13 +50,16 @@ int main(void) {
 
   setCameraProp(&camera);
 
+  Scene *scene = createScene();
+
   Model *cube = createModelCube();
 
   Instance cube1;
   cube1.model = cube;
   cube1.s = (float3d){1, 1, 1};
-  cube1.t = (float3d){0, 4, 0};
+  cube1.t = (float3d){0, 4, 10};
   cube1.r = (float3d){0, 0, 0};
+  cube1.pv = (float3d){0, 0, 0};
   calculateInstanceBoundingSphere(&cube1);
 
   Instance cube2;
@@ -62,14 +67,14 @@ int main(void) {
   cube2.s = (float3d){1, 12, 1};
   cube2.t = (float3d){0, 0, 15};
   cube2.r = (float3d){0, 0, 0};
+  cube2.pv = (float3d){0, 0, 0};
   calculateInstanceBoundingSphere(&cube2);
 
   float3d val = (float3d){.5, .5, .5};
   printf("Should be %f.\n", findDistanceToCenter(&val));
 
-  Stack *instances = createStack(4);
-  push(instances, &cube1);
-  push(instances, &cube2);
+  push(scene->instances, &cube1);
+  push(scene->instances, &cube2);
 
   double delta = 0;
   int a = 0, b = 0;
@@ -95,7 +100,7 @@ int main(void) {
           camera.pos->data[0][0] -= 1e-1;
         if (kbdState[SDL_SCANCODE_E])
           camera.pos->data[1][0] -= 1e-1;
-        if (kbdState[SDL_SCANCODE_Q])
+        if (kbdState[SDL_SCANCODE_SPACE])
           camera.pos->data[1][0] += 1e-1;
 
         while (SDL_PollEvent(&event) != 0) {
@@ -113,7 +118,11 @@ int main(void) {
       cube1.r.y -= 1;
       cube1.r.z -= 2;
 
-      renderInstances(renderer, instances, &camera);
+      updateInstances(&camera, scene->instances);
+
+      Stack *newInstance = clipScene(scene);
+
+      renderInstances(renderer, newInstance);
 
       setCameraProp(&camera);
 

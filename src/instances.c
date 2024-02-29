@@ -10,9 +10,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void renderInstances(SDL_Renderer *renderer, Stack *instances, Camera *camera) {
+void renderInstances(SDL_Renderer *renderer, Stack *instances) {
   for (int i = 0; i <= instances->top; ++i)
-    renderInstance(renderer, getStackItem(instances, i), camera);
+    renderInstance(renderer, getStackItem(instances, i));
+}
+
+void updateInstances(Camera *camera, Stack *instances) {
+  for (int i = 0; i <= instances->top; ++i)
+    updateInstance(getStackItem(instances, i), camera);
 }
 
 void calculateInstanceBoundingSphere(Instance *instance) {
@@ -43,15 +48,14 @@ void calculateInstanceBoundingSphere(Instance *instance) {
   printf("[DEBUG] Instance bounding sphere radius: %f.\n", maxValue);
 }
 
-void renderInstance(SDL_Renderer *renderer, Instance *instance,
-                    Camera *camera) {
+void updateInstance(Instance *instance, Camera *camera) {
   if (instance->model == NULL) {
     printf("[ERROR] Instance does not point to any object.");
     exit(EXIT_FAILURE);
   }
 
   int verticesCount = instance->model->verticesCount;
-  Stack *projected = createStack(verticesCount);
+  instance->projected = createStack(verticesCount);
 
   for (int v = 0; v < verticesCount; ++v) {
     Mat *vertexPos = createMat(4, 1, false);
@@ -66,17 +70,26 @@ void renderInstance(SDL_Renderer *renderer, Instance *instance,
 
     vertexPos = multiplyMat(camera->lookAt, vertexPos);
 
+    // update object data such that clipping works.
+    instance->t.x -= instance->pv.x + camera->pos->data[0][0];
+    instance->t.y -= instance->pv.y + camera->pos->data[1][0];
+    instance->t.z -= instance->pv.z + camera->pos->data[2][0];
+
     Mat *projectedPoint = projectVertex(vertexPos);
     freeMat(vertexPos);
 
-    push(projected, projectedPoint);
-  }
+    push(instance->projected, projectedPoint);
 
+    instance->pv = instance->t;
+  }
+}
+
+void renderInstance(SDL_Renderer *renderer, Instance *instance) {
   for (int t = 0; t < instance->model->trianglesCount; ++t) {
     Triangle triangle = instance->model->trianglesList[t];
-    Mat *v1 = getStackItem(projected, triangle.a);
-    Mat *v2 = getStackItem(projected, triangle.b);
-    Mat *v3 = getStackItem(projected, triangle.c);
+    Mat *v1 = getStackItem(instance->projected, triangle.a);
+    Mat *v2 = getStackItem(instance->projected, triangle.b);
+    Mat *v3 = getStackItem(instance->projected, triangle.c);
     drawWireframeTriangle(renderer, v1, v2, v3, &triangle.color);
   }
 }
