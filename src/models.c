@@ -19,15 +19,15 @@ Model *createModelCube() {
   trianglesList[10] = (Triangle){2, 6, 7, CYAN};
   trianglesList[11] = (Triangle){2, 7, 3, CYAN};
 
-  Vertex *vertices = malloc(8 * sizeof(Vertex));
-  vertices[0] = (Vertex){1, 1, 1};
-  vertices[1] = (Vertex){-1, 1, 1};
-  vertices[2] = (Vertex){-1, -1, 1};
-  vertices[3] = (Vertex){1, -1, 1};
-  vertices[4] = (Vertex){1, 1, -1};
-  vertices[5] = (Vertex){-1, 1, -1};
-  vertices[6] = (Vertex){-1, -1, -1};
-  vertices[7] = (Vertex){1, -1, -1};
+  float3d *vertices = malloc(8 * sizeof(float3d));
+  vertices[0] = (float3d){0.5, 0.5, 0.5};
+  vertices[1] = (float3d){-0.5, 0.5, 0.5};
+  vertices[2] = (float3d){-0.5, -0.5, 0.5};
+  vertices[3] = (float3d){0.5, -0.5, 0.5};
+  vertices[4] = (float3d){0.5, 0.5, -0.5};
+  vertices[5] = (float3d){-0.5, 0.5, -0.5};
+  vertices[6] = (float3d){-0.5, -0.5, -0.5};
+  vertices[7] = (float3d){0.5, -0.5, -0.5};
 
   Model *cube = malloc(sizeof(Model));
 

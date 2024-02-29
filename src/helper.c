@@ -10,8 +10,14 @@
 #include <SDL2/SDL_video.h>
 #include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
+
+// we conpute the eucledian distance from the center of the model, so p2 is
+// constantly equal to 0. This computation should be performed after the scaling
+// only.
+float findDistanceToCenter(const float3d *point) {
+  return sqrt(pow(point->x, 2) + pow(point->y, 2) + pow(point->z, 2));
+}
 
 Color shadeColor(const Color *col, float shade) {
   return (Color){col->red * shade, col->green * shade, col->blue * shade};
@@ -117,26 +123,26 @@ void drawWireframeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
 
 void drawTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
                   const Color *color) {
-  assert(p0->rows == 1 && p1->rows == 1 && p2->rows == 1 && p0->cols == 2 &&
-         p1->cols == 2 && p2->cols == 2);
+  assert(p0->rows == 2 && p1->rows == 2 && p2->rows == 2 && p0->cols == 1 &&
+         p1->cols == 1 && p2->cols == 1);
 
   // draw each vertical line inside the triangle p0->data[0][1] + (x>0) =
   // p2->data[0][1]
-  if (p1->data[0][1] < p0->data[0][1])
+  if (p1->data[1][0] < p0->data[1][0])
     swapMatPointers(&p0, &p1);
-  if (p2->data[0][1] < p0->data[0][1])
+  if (p2->data[1][0] < p0->data[1][0])
     swapMatPointers(&p0, &p2);
-  if (p2->data[0][1] < p1->data[0][1])
+  if (p2->data[1][0] < p1->data[1][0])
     swapMatPointers(&p1, &p2);
 
-  Stack *x012 = interpolate(p0->data[0][1], p0->data[0][0], p1->data[0][1],
+  Stack *x012 = interpolate(p0->data[1][0], p0->data[0][0], p1->data[1][0],
                             p1->data[0][0]);
   pop(x012); // the last value is the same than the first value of x12
-  Stack *x12 = interpolate(p1->data[0][1], p1->data[0][0], p2->data[0][1],
+  Stack *x12 = interpolate(p1->data[1][0], p1->data[0][0], p2->data[1][0],
                            p2->data[0][0]);
   append(x012, x12);
 
-  Stack *x02 = interpolate(p0->data[0][1], p0->data[0][0], p2->data[0][1],
+  Stack *x02 = interpolate(p0->data[1][0], p0->data[0][0], p2->data[1][0],
                            p2->data[0][0]);
   // the value from one of the side comes from 02, for the other side, from the
   // concatenation of 01 and 12
@@ -154,15 +160,15 @@ void drawTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
     xRight = x02;
   }
 
-  Mat *pixelCoord = createMat(1, 2, false);
+  Mat *pixelCoord = createMat(2, 1, false);
 
-  for (int y = p0->data[0][1]; y < p2->data[0][1]; ++y) {
-    int fromX = *(int *)getStackItem(xLeft, y - p0->data[0][1]);
+  for (int y = p0->data[1][0]; y < p2->data[1][0]; ++y) {
+    int fromX = *(int *)getStackItem(xLeft, y - p0->data[1][0]);
 
-    int toX = *(int *)getStackItem(xRight, y - p0->data[0][1]);
+    int toX = *(int *)getStackItem(xRight, y - p0->data[1][0]);
     for (int x = fromX; x <= toX; ++x) {
       pixelCoord->data[0][0] = x;
-      pixelCoord->data[0][1] = y;
+      pixelCoord->data[1][0] = y;
       setPixel(renderer, pixelCoord, color);
     }
   }

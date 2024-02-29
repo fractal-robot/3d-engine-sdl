@@ -1,10 +1,11 @@
 #include "camera.h"
 #include "definition.h"
+#include "helper.h"
 #include "instances.h"
 #include "matrix.h"
 #include "models.h"
 #include "sdl-interface.h"
-#include "transform.h"
+#include "stack.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
@@ -47,13 +48,28 @@ int main(void) {
 
   setCameraProp(&camera);
 
-  Model *model = createModelCube();
-  Instance instance = {
-      instance.model = model,
-      instance.s = (float3d){1, 1, 1},
-      instance.t = (float3d){0, 0, 4},
-      instance.r = (float3d){0, 0, 0},
-  };
+  Model *cube = createModelCube();
+
+  Instance cube1;
+  cube1.model = cube;
+  cube1.s = (float3d){1, 1, 1};
+  cube1.t = (float3d){0, 4, 0};
+  cube1.r = (float3d){0, 0, 0};
+  calculateInstanceBoundingSphere(&cube1);
+
+  Instance cube2;
+  cube2.model = cube;
+  cube2.s = (float3d){1, 12, 1};
+  cube2.t = (float3d){0, 0, 15};
+  cube2.r = (float3d){0, 0, 0};
+  calculateInstanceBoundingSphere(&cube2);
+
+  float3d val = (float3d){.5, .5, .5};
+  printf("Should be %f.\n", findDistanceToCenter(&val));
+
+  Stack *instances = createStack(4);
+  push(instances, &cube1);
+  push(instances, &cube2);
 
   double delta = 0;
   int a = 0, b = 0;
@@ -89,11 +105,12 @@ int main(void) {
 
       clearCanva(renderer);
 
-      instance.r.x += 1;
-      instance.r.y -= 1;
-      instance.r.z -= 2;
+      cube1.r.x += 1;
+      cube1.r.y -= 1;
+      cube1.r.z -= 2;
 
-      renderInstance(renderer, &instance, &camera);
+      renderInstances(renderer, instances, &camera);
+
       setCameraProp(&camera);
 
       SDL_RenderPresent(renderer);

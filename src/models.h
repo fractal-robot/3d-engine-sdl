@@ -5,19 +5,12 @@
 #include <SDL2/SDL_render.h>
 
 typedef struct {
-  float x;
-  float y;
-  float z;
-} Vertex;
-
-typedef struct {
   Triangle *trianglesList;
-  Vertex *vertices;
+  float3d *vertices;
   int trianglesCount;
   int verticesCount;
 } Model;
 
 Model *createModelCube();
-void renderModel(SDL_Renderer *renderer, Model *model);
 
 #endif

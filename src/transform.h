@@ -2,12 +2,7 @@
 #define TRANSFORM_H
 
 #include "matrix.h"
-
-typedef struct {
-  float x;
-  float y;
-  float z;
-} float3d;
+#include "structs.h"
 
 void translate(Mat *point, const float3d *translate);
 Mat *scale(Mat *point, const float3d *scale);

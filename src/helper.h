@@ -22,5 +22,6 @@ Mat *viewPortToCanva(const Mat *point);
 Mat *projectVertex(const Mat *point);
 void drawShadeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
                        float h0, float h1, float h2, const Color *color);
+float findDistanceToCenter(const float3d *point);
 
 #endif
