@@ -93,6 +93,10 @@ int main(void) {
           camera.pos->data[0][0] += 1e-1;
         if (kbdState[SDL_SCANCODE_A])
           camera.pos->data[0][0] -= 1e-1;
+        if (kbdState[SDL_SCANCODE_E])
+          camera.pos->data[1][0] -= 1e-1;
+        if (kbdState[SDL_SCANCODE_Q])
+          camera.pos->data[1][0] += 1e-1;
 
         while (SDL_PollEvent(&event) != 0) {
           switch (event.type) {
