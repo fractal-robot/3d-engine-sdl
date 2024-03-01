@@ -26,9 +26,9 @@ void setCameraProp(Camera *c) {
   c->lookAt = createMat(4, 4, false);
 
   float posArr[4][4] = {
-      {1, 0, 0, -c->pos->data[0][0]},
-      {0, 1, 0, -c->pos->data[1][0]},
-      {0, 0, 1, -c->pos->data[2][0]},
+      {1, 0, 0, -getX(c->pos)},
+      {0, 1, 0, -getY(c->pos)},
+      {0, 0, 1, -getZ(c->pos)},
       {0, 0, 0, 1},
   };
 

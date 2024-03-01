@@ -9,7 +9,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 
-void setPixel(SDL_Renderer *renderer, const Mat *coord, const Color *color);
-void clearCanva(SDL_Renderer *renderer);
+extern SDL_Renderer *renderer;
+extern SDL_Event event;
+extern SDL_Window *window;
+
+void setPixel(const Mat *coord, const Color *color);
+void clearCanva();
 
 #endif

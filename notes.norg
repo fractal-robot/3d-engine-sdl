@@ -1,0 +1,24 @@
+* Shapes: 
+  Description of the vertices of the initial shapes. 
+
+* Models: 
+  Set of vertex coordinates, texture mapping, and other attributes.
+
+* Instances: 
+  Each instance hold a pointer to a specific model, and hold the
+  transformations. 
+
+* Scene: 
+  Manage each instances that will be drawn.
+
+* Renderer: 
+  Render different things, from a point to the whole scene.
+
+** When to calculate again the transformations of an instance?
+   1. The cipping need to be aware of the current camera position.
+   -- How do we retrieve the instance view coordinates for clipping?
+   -- Each model is set into world space by it's translation matrix.
+
+   2. Should the scene hold the camera?
+      
+

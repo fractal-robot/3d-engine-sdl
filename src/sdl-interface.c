@@ -17,14 +17,14 @@
 #error "[ERROR] WINDOW_WIDTH must be a power of 2.\n"
 #endif
 
-void setPixel(SDL_Renderer *renderer, const Mat *coord, const Color *color) {
+void setPixel(const Mat *coord, const Color *color) {
   // (0, 0): center of the canva
   // cartesian coordinates
 
   assert(coord->rows == 2 && coord->cols == 1);
 
-  const int pX = ((int)(RENDER_WIDTH / 2) + coord->data[0][0]) * SCALE_FACTOR;
-  const int pY = ((int)(RENDER_WIDTH / 2) - coord->data[1][0]) * SCALE_FACTOR;
+  const int pX = ((int)(RENDER_WIDTH / 2) + getX(coord)) * SCALE_FACTOR;
+  const int pY = ((int)(RENDER_WIDTH / 2) - getY(coord)) * SCALE_FACTOR;
 
   const int scaleOffset = SCALE_FACTOR / 2; // / 2 because we want (0,0) to be
                                             // centered on the screen
@@ -35,7 +35,7 @@ void setPixel(SDL_Renderer *renderer, const Mat *coord, const Color *color) {
       SDL_RenderDrawPoint(renderer, pX + x, pY + y);
 }
 
-void clearCanva(SDL_Renderer *renderer) {
+void clearCanva() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
   SDL_RenderClear(renderer);
 }

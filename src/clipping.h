@@ -4,5 +4,6 @@
 #include "scene.h"
 
 Stack *clipScene(Scene *scene);
+Instance *clipInstance(Instance *instance);
 
 #endif

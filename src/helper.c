@@ -70,27 +70,24 @@ void swapMatPointers(Mat **p0, Mat **p1) {
   *p1 = temp;
 }
 
-void drawLine(SDL_Renderer *renderer, Mat *p0, Mat *p1, const Color *color) {
+void drawLine(Mat *p0, Mat *p1, const Color *color) {
   assert(p0->rows == 2 && p1->rows == 2 && p0->cols == 1 && p1->cols == 1);
 
-  int dx = p1->data[0][0] - p0->data[0][0];
-  int dy = p1->data[1][0] - p0->data[1][0];
+  int dx = getX(p1) - getX(p0);
+  int dy = getY(p1) - getY(p0);
 
   Mat *pixelCoord = createMat(2, 1, false);
 
   if (abs(dx) > abs(dy)) {
-    if (p0->data[0][0] > p1->data[0][0])
+    if (getX(p0) > getX(p1))
       swapMatPointers(&p0, &p1);
 
-    Stack *ys = interpolate(p0->data[0][0], p0->data[1][0], p1->data[0][0],
-                            p1->data[1][0]);
-    for (int x = p0->data[0][0]; x <= p1->data[0][0]; ++x) {
-      if (!(x - p0->data[0][0] < 0 || x - p0->data[0][0] >= ys->top)) {
-        int y = *(int *)getStackItem(ys, x - p0->data[0][0]);
-        pixelCoord->data[0][0] = x;
-        pixelCoord->data[1][0] = y;
-        setPixel(renderer, pixelCoord, color);
-      }
+    Stack *ys = interpolate(getX(p0), getY(p0), getX(p1), getY(p1));
+    for (int x = getX(p0); x <= getX(p1); ++x) {
+      int y = *(int *)getStackItem(ys, x - p0->data[0][0]);
+      setX(pixelCoord, x);
+      setY(pixelCoord, y);
+      setPixel(pixelCoord, color);
     }
     freeStack(ys);
 
@@ -101,12 +98,10 @@ void drawLine(SDL_Renderer *renderer, Mat *p0, Mat *p1, const Color *color) {
     Stack *xs = interpolate(p0->data[1][0], p0->data[0][0], p1->data[1][0],
                             p1->data[0][0]);
     for (int y = p0->data[1][0]; y <= p1->data[1][0]; ++y) {
-      if (!(y - p0->data[1][0] < 0 || y - p0->data[1][0] >= xs->top)) {
-        int x = *(int *)getStackItem(xs, y - p0->data[1][0]);
-        pixelCoord->data[0][0] = x;
-        pixelCoord->data[1][0] = y;
-        setPixel(renderer, pixelCoord, color);
-      }
+      int x = *(int *)getStackItem(xs, y - p0->data[1][0]);
+      pixelCoord->data[0][0] = x;
+      pixelCoord->data[1][0] = y;
+      setPixel(pixelCoord, color);
     }
     freeStack(xs);
   }
@@ -114,15 +109,13 @@ void drawLine(SDL_Renderer *renderer, Mat *p0, Mat *p1, const Color *color) {
   freeMat(pixelCoord);
 }
 
-void drawWireframeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
-                           const Color *color) {
-  drawLine(renderer, p0, p1, color);
-  drawLine(renderer, p1, p2, color);
-  drawLine(renderer, p2, p0, color);
+void drawWireframeTriangle(Mat *p0, Mat *p1, Mat *p2, const Color *color) {
+  drawLine(p0, p1, color);
+  drawLine(p1, p2, color);
+  drawLine(p2, p0, color);
 }
 
-void drawTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
-                  const Color *color) {
+void drawTriangle(Mat *p0, Mat *p1, Mat *p2, const Color *color) {
   assert(p0->rows == 2 && p1->rows == 2 && p2->rows == 2 && p0->cols == 1 &&
          p1->cols == 1 && p2->cols == 1);
 
@@ -169,7 +162,7 @@ void drawTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
     for (int x = fromX; x <= toX; ++x) {
       pixelCoord->data[0][0] = x;
       pixelCoord->data[1][0] = y;
-      setPixel(renderer, pixelCoord, color);
+      setPixel(pixelCoord, color);
     }
   }
 
@@ -184,8 +177,8 @@ void swapFloats(float *a, float *b) {
   *b = temp;
 }
 
-void drawShadeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
-                       float h0, float h1, float h2, const Color *color) {
+void drawShadeTriangle(Mat *p0, Mat *p1, Mat *p2, float h0, float h1, float h2,
+                       const Color *color) {
   // sort the vertices from bottom to top
   if (p1->data[0][1] < p0->data[0][1]) {
     swapMatPointers(&p0, &p1);
@@ -248,7 +241,7 @@ void drawShadeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
           shadeColor(color, *(float *)getStackItem(hueSegment, x - fromX));
       pixelCoord->data[0][0] = x;
       pixelCoord->data[0][1] = y;
-      setPixel(renderer, pixelCoord, &shadedColor);
+      setPixel(pixelCoord, &shadedColor);
     }
   }
 
@@ -261,16 +254,16 @@ void drawShadeTriangle(SDL_Renderer *renderer, Mat *p0, Mat *p1, Mat *p2,
 
 Mat *viewPortToCanva(const Mat *point) {
   Mat *toCanva = createMat(2, 1, false);
-  toCanva->data[0][0] = point->data[0][0] * (int)RENDER_WIDTH / VIEWPORT_WIDTH;
-  toCanva->data[1][0] = point->data[1][0] * (int)RENDER_WIDTH / VIEWPORT_WIDTH;
+  setX(toCanva, getX(point) * (int)RENDER_WIDTH / VIEWPORT_WIDTH);
+  setY(toCanva, getY(point) * (int)RENDER_WIDTH / VIEWPORT_WIDTH);
   return toCanva;
 }
 
 Mat *projectVertex(const Mat *point) {
   assert(point->rows == 4 && point->cols == 1);
   const Mat *projected = createMat(2, 1, false);
-  projected->data[0][0] = point->data[0][0] * D / point->data[2][0];
-  projected->data[1][0] = point->data[1][0] * D / point->data[2][0];
+  setX(projected, getX(point) * D / getZ(point));
+  setY(projected, getY(point) * D / getZ(point));
   Mat *toCava = viewPortToCanva(projected);
   freeMat(projected);
   return toCava;

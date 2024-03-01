@@ -24,6 +24,8 @@ Plane rightPlane = (Plane){-1 / SQRT2, 0, 1 / SQRT2, 0};
 Plane bottomPlane = (Plane){0, 1 / SQRT2, 1 / SQRT2, 0};
 Plane topPlane = (Plane){0, -1 / SQRT2, 1 / SQRT2, 0};
 
+// clipTrianglesAgainstPlane() { Stack *clippedTriangles = createStack(1); }
+
 float signedDistance(const Plane *plane, const float3d *vertex) {
   return (vertex->x * plane->x) + (vertex->y * plane->y) +
          (vertex->z * plane->z) + plane->d;
@@ -31,11 +33,14 @@ float signedDistance(const Plane *plane, const float3d *vertex) {
 
 Instance *clipInstanceAgainstPlane(Instance *instance, Plane *plane) {
   float d = signedDistance(plane, &instance->t);
-  printf("Distance from the plane: %f\n", d);
   if (d > instance->boundingSphereRadius) {
     return instance;
+  } else if (d < -instance->boundingSphereRadius) {
+    return NULL;
+  } else {
+    //    clipTrianglesAgainstPlane(instance);
+    return NULL;
   }
-  return NULL;
 }
 
 Instance *clipInstance(Instance *instance) {
@@ -62,15 +67,13 @@ Instance *clipInstance(Instance *instance) {
 } */
 
 Stack *clipScene(Scene *scene) {
-  Stack *clippedInstances = createStack(4);
+  Stack *clippedInstances = createStack(1);
 
   for (int i = 0; i <= scene->instances->top; ++i) {
     Instance *newInstance = clipInstance(scene->instances->items[i]);
     if (newInstance != NULL)
       push(clippedInstances, newInstance);
   }
-
-  printf("\n\n\n\n\n");
 
   return clippedInstances;
 }

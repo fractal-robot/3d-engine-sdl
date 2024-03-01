@@ -5,7 +5,7 @@
 
 Stack *createStack(int capacity) {
   Stack *stack = (Stack *)malloc(sizeof(Stack));
-  stack->capacity = capacity;
+  (capacity > 0) ? (stack->capacity = capacity) : (stack->capacity = 1);
   stack->items = (void **)malloc(stack->capacity * sizeof(void *));
   stack->top = -1;
   return stack;
