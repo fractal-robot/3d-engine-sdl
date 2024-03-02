@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include "structs.h"
+#include <stdbool.h>
 
 typedef struct {
   float **data;
@@ -27,16 +28,17 @@ static inline void setW(const Mat *mat, const float value) {
   mat->data[3][0] = value;
 }
 
-Mat *createMat(int rows, int cols, _Bool initWithZero);
-void freeMat(const Mat *matrix);
+Mat *createMat(int rows, int cols, bool initWithZero);
+void assignArray(Mat *mat, const float *values);
+void freeMat(Mat *matrix);
 void setElement(Mat *mat, int row, int col, float value);
-float getElement(Mat *mat, int row, int col);
-Mat *multiplyMat(Mat *mat1, Mat *mat2);
+float getElement(const Mat *mat, int row, int col);
+Mat *multiplyMat(const Mat *mat1, const Mat *mat2);
 void printMat(const Mat *matrix);
 void normalizeMat(Mat *mat);
-Mat *crossMat(Mat *u, Mat *v);
-Mat *substractMat(Mat *u, Mat *v);
-void assignArray(Mat *mat, float *values);
-float dotProduct(Mat *point, float3d plane);
+Mat *crossMat(const Mat *u, const Mat *v);
+float dotProduct(const Mat *point, const float3d plane);
+Mat *subtractMat(const Mat *u, const Mat *v);
+bool isMatEmpty(const Mat *mat);
 
 #endif

@@ -12,6 +12,6 @@ typedef struct {
 } Shape;
 
 Shape *initShapeCube();
-void freeModel(Shape *shape);
+void freeShape(Shape *shape);
 
 #endif

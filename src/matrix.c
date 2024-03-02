@@ -6,76 +6,68 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Mat *createMat(int rows, int cols, _Bool initWithZero) {
+Mat *createMat(int rows, int cols, bool initWithZero) {
+  assert(rows > 0 && cols > 0);
+
   Mat *mat = malloc(sizeof(Mat));
-  if (mat == NULL) {
-    printf("[ERROR] Failed to allocate matrix.\n");
-    exit(EXIT_FAILURE);
-  }
+  assert(mat != NULL);
 
   mat->rows = rows;
   mat->cols = cols;
 
-  mat->data = (float **)malloc(rows * sizeof(float *));
-  if (mat->data == NULL) {
-    printf("[ERROR] Failed to allocate matrix.\n");
-    exit(EXIT_FAILURE);
-  }
+  mat->data = malloc(rows * sizeof(float *));
+  assert(mat->data != NULL);
 
   for (int i = 0; i < rows; ++i) {
-    mat->data[i] = (float *)malloc(cols * sizeof(float));
-    if (mat->data[i] == NULL) {
-      printf("[ERROR] Failed to allocate matrix.\n");
-      exit(EXIT_FAILURE);
-    }
-    if (initWithZero)
+    mat->data[i] = calloc(cols, sizeof(float));
+    assert(mat->data[i] != NULL);
+    if (initWithZero) {
       for (int j = 0; j < cols; ++j)
         mat->data[i][j] = 0.0;
+    }
   }
 
   return mat;
 }
 
-void assignArray(Mat *mat, float *values) {
+void assignArray(Mat *mat, const float *values) {
+  assert(mat != NULL && values != NULL);
+
   for (int i = 0; i < mat->rows; ++i)
     for (int j = 0; j < mat->cols; ++j)
       mat->data[i][j] = values[i * mat->cols + j];
 }
 
-void freeMat(const Mat *matrix) {
+void freeMat(Mat *matrix) {
   for (int i = 0; i < matrix->rows; ++i)
     free(matrix->data[i]);
   free(matrix->data);
-  free((void *)matrix);
+  free(matrix);
+}
+
+bool isMatEmpty(const Mat *mat) {
+  if (mat == NULL)
+    return true;
+  return (mat->rows == 0 || mat->cols == 0);
 }
 
 void setElement(Mat *mat, int row, int col, float value) {
-  if (row < 0 || row >= mat->rows || col < 0 || col >= mat->cols) {
-    printf("[ERROR] Failed to set element to matrix: index out of bounds.\n");
-    exit(EXIT_FAILURE);
-  }
-
+  assert(mat != NULL && row >= 0 && row < mat->rows && col >= 0 &&
+         col < mat->cols);
   mat->data[row][col] = value;
 }
 
-float getElement(Mat *mat, int row, int col) {
-  if (row < 0 || row >= mat->rows || col < 0 || col >= mat->cols) {
-    printf("[ERROR] Failed to get element from matrix: index out of bounds.\n");
-    exit(EXIT_FAILURE);
-  }
-
+float getElement(const Mat *mat, int row, int col) {
+  assert(mat != NULL && row >= 0 && row < mat->rows && col >= 0 &&
+         col < mat->cols);
   return mat->data[row][col];
 }
 
-Mat *multiplyMat(Mat *mat1, Mat *mat2) {
-  if (mat1->cols != mat2->rows) {
-    printf("[ERROR] Failed to multiply matrices: incompatible dimensions.\n");
-    printf("First matrix %i %i \n", mat1->rows, mat1->cols);
-    printf("Second matrix %i %i \n", mat2->rows, mat2->cols);
-    exit(EXIT_FAILURE);
-  }
+Mat *multiplyMat(const Mat *mat1, const Mat *mat2) {
+  assert(mat1 != NULL && mat2 != NULL && mat1->cols == mat2->rows);
 
-  Mat *result = createMat(mat1->rows, mat2->cols, 1);
+  Mat *result = createMat(mat1->rows, mat2->cols, false);
+  assert(result != NULL);
 
   for (int i = 0; i < mat1->rows; ++i)
     for (int j = 0; j < mat2->cols; ++j)
@@ -86,6 +78,8 @@ Mat *multiplyMat(Mat *mat1, Mat *mat2) {
 }
 
 void printMat(const Mat *matrix) {
+  assert(matrix != NULL);
+
   printf("\n\n---\n");
 
   for (int i = 0; i < matrix->rows; ++i) {
@@ -98,7 +92,7 @@ void printMat(const Mat *matrix) {
 }
 
 void normalizeMat(Mat *mat) {
-  assert(mat->cols == 1);
+  assert(mat != NULL && mat->cols == 1);
 
   float length = 0.0;
   for (int i = 0; i < mat->rows; ++i)
@@ -106,13 +100,15 @@ void normalizeMat(Mat *mat) {
   length = sqrt(length);
 
   for (int i = 0; i < mat->rows; ++i)
-    mat->data[i][0] = mat->data[i][0] / length;
+    mat->data[i][0] /= length;
 }
 
-Mat *crossMat(Mat *u, Mat *v) {
-  assert(u->rows == 3 && v->rows == 3 && u->cols == 1 && v->cols == 1);
+Mat *crossMat(const Mat *u, const Mat *v) {
+  assert(u != NULL && v != NULL && u->rows == 3 && v->rows == 3 &&
+         u->cols == 1 && v->cols == 1);
 
   Mat *product = createMat(3, 1, false);
+  assert(product != NULL);
 
   product->data[0][0] =
       u->data[1][0] * v->data[2][0] - u->data[2][0] * v->data[1][0];
@@ -124,19 +120,22 @@ Mat *crossMat(Mat *u, Mat *v) {
   return product;
 }
 
-float dotProduct(Mat *point, float3d plane) {
-  assert(point->rows == 4 && point->cols == 1);
+float dotProduct(const Mat *point, const float3d plane) {
+  assert(point != NULL && point->rows == 4 && point->cols == 1);
+
   return point->data[0][0] * plane.x + point->data[1][0] * plane.y +
          point->data[2][0] * plane.y;
 }
 
-Mat *substractMat(Mat *u, Mat *v) {
-  assert(u->rows == v->rows && u->cols == 1 && v->cols == 1);
+Mat *subtractMat(const Mat *u, const Mat *v) {
+  assert(u != NULL && v != NULL && u->rows == v->rows && u->cols == 1 &&
+         v->cols == 1);
 
-  Mat *substracted = createMat(u->rows, 1, false);
+  Mat *subtracted = createMat(u->rows, 1, false);
+  assert(subtracted != NULL);
 
   for (int i = 0; i < u->rows; ++i)
-    substracted->data[i][0] = u->data[i][0] - v->data[i][0];
+    subtracted->data[i][0] = u->data[i][0] - v->data[i][0];
 
-  return substracted;
+  return subtracted;
 }

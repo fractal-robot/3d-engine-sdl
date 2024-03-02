@@ -46,12 +46,13 @@ Instance *clipInstanceAgainstPlane(Instance *instance, Plane *plane) {
 Instance *clipInstance(Instance *instance) {
   Plane *planes[5] = {&nearPlane, &leftPlane, &rightPlane, &bottomPlane,
                       &topPlane};
+  Instance *newInstance;
   for (int i = 0; i < 5; ++i) {
-    instance = clipInstanceAgainstPlane(instance, planes[i]);
+    newInstance = clipInstanceAgainstPlane(instance, planes[i]);
     if (instance == NULL)
       return NULL;
   }
-  return instance;
+  return newInstance;
 }
 
 /*

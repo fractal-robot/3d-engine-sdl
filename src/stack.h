@@ -10,7 +10,7 @@ typedef struct {
 } Stack;
 
 Stack *createStack(int capacity);
-int isEmpty(Stack *stack);
+int isStackEmpty(Stack *stack);
 void *pop(Stack *stack);
 void freeStack(Stack *stack);
 Stack *initializeStack(void *array, int arraySize);

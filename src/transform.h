@@ -4,8 +4,8 @@
 #include "matrix.h"
 #include "structs.h"
 
-void translate(Mat *point, const float3d *translate);
-Mat *scale(Mat *point, const float3d *scale);
-Mat *rotate(Mat *point, const float3d *rotation);
+Mat *createTranslationMatrix(const float3d *values);
+Mat *createScaleMatrix(const float3d *values);
+Mat *createRotationMatrix(const float3d *values);
 
 #endif

@@ -1,8 +1,9 @@
 #include "camera.h"
 #include "matrix.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
-void setCameraProp(Camera *c) {
+void setCameraProp(Camera *camera) {
   /*
 
   c->direction = substractMat(c->pos, c->target);
@@ -23,16 +24,33 @@ void setCameraProp(Camera *c) {
 
   // initialize the look at matrix
   // for now we only care about space translation
-  c->lookAt = createMat(4, 4, false);
 
   float posArr[4][4] = {
-      {1, 0, 0, -getX(c->pos)},
-      {0, 1, 0, -getY(c->pos)},
-      {0, 0, 1, -getZ(c->pos)},
+      {1, 0, 0, -getX(camera->pos)},
+      {0, 1, 0, -getY(camera->pos)},
+      {0, 0, 1, -getZ(camera->pos)},
       {0, 0, 0, 1},
   };
 
   float *posArrPtr = *posArr;
+  assignArray(camera->lookAt, posArrPtr);
+}
 
-  assignArray(c->lookAt, posArrPtr);
+void initCamera(Camera *camera) {
+  camera->pos = NULL;
+  camera->target = NULL;
+  camera->direction = NULL;
+  camera->up = NULL;
+  camera->right = NULL;
+  camera->lookAt = createMat(4, 4, false);
+}
+
+void destroyCamera(Camera *camera) {
+  freeMat(camera->pos);
+  freeMat(camera->target);
+  freeMat(camera->direction);
+  freeMat(camera->up);
+  freeMat(camera->right);
+  freeMat(camera->lookAt);
+  free(camera);
 }

@@ -29,32 +29,38 @@
 #include <math.h>
 #include <stdbool.h>
 
-void translate(Mat *point, const float3d *translate) {
-  point->data[0][0] += translate->x;
-  point->data[1][0] += translate->y;
-  point->data[2][0] += translate->z;
+Mat *createTranslationMatrix(const float3d *values) {
+  Mat *translationMat = createMat(4, 4, true);
+  translationMat->data[0][0] = 1;
+  translationMat->data[1][1] = 1;
+  translationMat->data[2][2] = 1;
+  translationMat->data[3][3] = 1;
+
+  translationMat->data[0][3] = values->x;
+  translationMat->data[1][3] = values->y;
+  translationMat->data[2][3] = values->z;
+
+  return translationMat;
 }
 
-Mat *scale(Mat *point, const float3d *scale) {
-  Mat *scalarMat = createMat(4, 4, true);
-  scalarMat->data[0][0] = scale->x;
-  scalarMat->data[1][1] = scale->y;
-  scalarMat->data[2][2] = scale->z;
-  scalarMat->data[3][3] = 1;
-  Mat *newPoint = multiplyMat(scalarMat, point);
-  freeMat(point);
-  return newPoint;
+Mat *createScaleMatrix(const float3d *values) {
+  Mat *scalingMat = createMat(4, 4, true);
+  scalingMat->data[0][0] = values->x;
+  scalingMat->data[1][1] = values->y;
+  scalingMat->data[2][2] = values->z;
+  scalingMat->data[3][3] = 1;
+
+  return scalingMat;
 }
 
 float degToRad(float deg) { return deg * M_PI / 180; }
 
-Mat *rotate(Mat *point, const float3d *rotation) {
-  // this implement homogeneous rotation matrix, so we cant rotate 3 angles at a
-  // time
+Mat *createRotationMatrix(const float3d *values) {
+  // homogeneous Euler rotation matrix
 
-  float x = degToRad(rotation->x);
-  float y = degToRad(rotation->y);
-  float z = degToRad(rotation->z);
+  float x = degToRad(values->x);
+  float y = degToRad(values->y);
+  float z = degToRad(values->z);
 
   Mat *rotationMat = createMat(4, 4, false);
   rotationMat->data[0][0] = cos(y) * cos(z);
@@ -74,8 +80,5 @@ Mat *rotate(Mat *point, const float3d *rotation) {
   rotationMat->data[3][2] = 0;
   rotationMat->data[3][3] = 1;
 
-  Mat *newPoint = multiplyMat(rotationMat, point);
-
-  freeMat(point);
-  return newPoint;
+  return rotationMat;
 }

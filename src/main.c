@@ -1,9 +1,14 @@
+#include "camera.h"
 #include "definition.h"
 #include "instances.h"
+#include "matrix.h"
 #include "scene.h"
 #include "sdl-interface.h"
+#include "shapes.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 SDL_Renderer *renderer;
 SDL_Event event;
@@ -18,43 +23,36 @@ int main() {
   SDL_SetWindowTitle(window, "window");
   const Uint8 *kbdState = SDL_GetKeyboardState(NULL);
 
-  Camera camera;
+  Camera *camera = malloc(sizeof(Camera));
+  initCamera(camera);
 
   {
-    Mat *pos = createMat(3, 0, false);
-    pos->data[0][0] = .5;
-    pos->data[1][0] = 0;
-    pos->data[2][0] = -5;
-
-    camera.pos = pos;
+    Mat *pos = createMat(3, 1, false);
+    setX(pos, .5);
+    setY(pos, 0);
+    setZ(pos, -5);
+    camera->pos = pos;
   }
 
-  setCameraProp(&camera);
-
-  Scene *scene = createScene();
-
-  sceneAddCamera(scene, &camera);
-
   Shape *cube = initShapeCube();
-  sceneAddModel(scene, cube);
 
-  Instance cube1;
-  cube1.model = cube;
-  cube1.s = (float3d){1, 1, 1};
-  cube1.t = (float3d){0, 4, 10};
-  cube1.r = (float3d){0, 0, 0};
-  cube1.pv = (float3d){0, 0, 0};
-  calculateInstanceBoundingSphere(&cube1);
-  sceneAddInstance(scene, &cube1);
+  Instance *cube1 = initInstance(cube);
+  cube1->s = (float3d){1, 1, 1};
+  cube1->t = (float3d){-4, 4, 20};
+  cube1->r = (float3d){0, 0, 0};
+  cube1->updateInstance = true;
 
-  Instance cube2;
-  cube2.model = cube;
-  cube2.s = (float3d){1, 10, 5};
-  cube2.t = (float3d){0, 0, 15};
-  cube2.r = (float3d){0, 0, 40};
-  cube2.pv = (float3d){0, 0, 0};
-  calculateInstanceBoundingSphere(&cube2);
-  sceneAddInstance(scene, &cube2);
+  Instance *cube2 = initInstance(cube);
+  cube2->s = (float3d){1, 10, 5};
+  cube2->t = (float3d){0, 0, 50};
+  cube2->r = (float3d){0, 0, 40};
+  cube2->updateInstance = true;
+
+  clearCanva();
+
+  float3d rotation = {25, 25, 25};
+
+  SDL_RenderPresent(renderer);
 
   double delta = 0;
   int a = 0, b = 0;
@@ -66,22 +64,21 @@ int main() {
 
     if (delta > 1000 / 60.0) {
       b = a;
-
       {
         SDL_PumpEvents();
 
         if (kbdState[SDL_SCANCODE_W])
-          camera.pos->data[2][0] += 1e-1;
+          camera->pos->data[2][0] += 1e-1;
         if (kbdState[SDL_SCANCODE_S])
-          camera.pos->data[2][0] -= 1e-1;
+          camera->pos->data[2][0] -= 1e-1;
         if (kbdState[SDL_SCANCODE_D])
-          camera.pos->data[0][0] += 1e-1;
+          camera->pos->data[0][0] += 1e-1;
         if (kbdState[SDL_SCANCODE_A])
-          camera.pos->data[0][0] -= 1e-1;
+          camera->pos->data[0][0] -= 1e-1;
         if (kbdState[SDL_SCANCODE_E])
-          camera.pos->data[1][0] -= 1e-1;
+          camera->pos->data[1][0] -= 1e-1;
         if (kbdState[SDL_SCANCODE_SPACE])
-          camera.pos->data[1][0] += 1e-1;
+          camera->pos->data[1][0] += 1e-1;
 
         while (SDL_PollEvent(&event) != 0) {
           switch (event.type) {
@@ -94,26 +91,31 @@ int main() {
 
       clearCanva();
 
-      cube1.r.x += 1;
-      cube1.r.y -= 1;
-      cube1.r.z -= 2;
+      setCameraProp(camera);
 
-      setCameraProp(&camera);
+      rotation.x += 20;
+      setInstanceTransform(ROTATION, rotation, cube1);
 
-      renderScene(scene);
+      updateInstance(cube1);
+      updateInstance(cube2);
+
+      renderWireframeInstance(cube1, camera);
+      renderWireframeInstance(cube2, camera);
 
       SDL_RenderPresent(renderer);
-
       if (quit)
         break;
     }
   }
 
+  destroyInstance(cube1);
+  destroyInstance(cube2);
+
+  freeShape(cube);
+
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-
-  freeModel(cube);
 
   return EXIT_SUCCESS;
 }

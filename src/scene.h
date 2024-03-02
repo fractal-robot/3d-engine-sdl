@@ -8,13 +8,11 @@
 
 typedef struct {
   Stack *instances;
-  Stack *newInstances; // pointer to all the instances that are totally in the
-                       // inside plane of the clipping space
-  Stack *newTriangles; // set of the new triangles that have been calculated on
-                       // the second step of the clipping
   Stack *models; // we need to store the models of the instances in order to be
-
-  // able to free them once the scene have been destroyed
+                 // able to free them once the scene have been destroyed
+  Stack *validInstances;     // instances that are in the clipping frustrum
+  Stack *correctedInstances; // instances that crossed the border of the
+                             // clipping planes
   Camera *camera;
 } Scene;
 

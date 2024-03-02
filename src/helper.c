@@ -89,6 +89,9 @@ void drawLine(Mat *p0, Mat *p1, const Color *color) {
       setY(pixelCoord, y);
       setPixel(pixelCoord, color);
     }
+
+    for (int i = 0; i <= ys->top; ++i)
+      free(ys->items[i]);
     freeStack(ys);
 
   } else {
@@ -103,6 +106,9 @@ void drawLine(Mat *p0, Mat *p1, const Color *color) {
       pixelCoord->data[1][0] = y;
       setPixel(pixelCoord, color);
     }
+    for (int i = 0; i <= xs->top; ++i)
+      free(xs->items[i]);
+
     freeStack(xs);
   }
 

@@ -10,82 +10,144 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void updateInstances(Camera *camera, Stack *instances) {
-  for (int i = 0; i <= instances->top; ++i)
-    updateInstance(getStackItem(instances, i), camera);
+/* void calculateInstanceBoundingSphere(Instance *instance) {
+ float maxValue = 0.0;
+ int verticesCount = instance->model->verticesCount;
+ float3d pointPos;
+
+ for (int v = 0; v < verticesCount; ++v) {
+   Mat *vertexPos = createMat(4, 1, false);
+   setX(vertexPos, instance->model->vertices[v].x);
+   setY(vertexPos, instance->model->vertices[v].y);
+   setZ(vertexPos, instance->model->vertices[v].z);
+   setW(vertexPos, 1);
+
+   vertexPos = scale(vertexPos, &instance->s);
+
+   pointPos.x = getX(vertexPos);
+   pointPos.y = getY(vertexPos);
+   pointPos.z = getZ(vertexPos);
+
+   float currentValue = findDistanceToCenter(&pointPos);
+
+   if (currentValue > maxValue)
+     maxValue = currentValue;
+ }
+
+ instance->boundingSphereRadius = maxValue;
+ printf("[DEBUG] Instance %p bounding sphere radius: %f.\n", &instance,
+        maxValue);
+}
+*/
+
+Instance *initInstance(Shape *shape) {
+  Instance *instance = malloc(sizeof(Instance));
+
+  instance->model = shape;
+  instance->updateInstance = false;
+  instance->projected = NULL;
+  instance->transformationsMat = NULL;
+
+  return instance;
 }
 
-void calculateInstanceBoundingSphere(Instance *instance) {
-  float maxValue = 0.0;
-  int verticesCount = instance->model->verticesCount;
-  float3d pointPos;
+void renderWireframeInstance(Instance *instance, Camera *camera) {
+  for (int t = 0; t < instance->model->trianglesCount; ++t) {
+    Triangle triangle = instance->model->trianglesList[t];
 
-  for (int v = 0; v < verticesCount; ++v) {
-    Mat *vertexPos = createMat(4, 1, false);
-    setX(vertexPos, instance->model->vertices[v].x);
-    setY(vertexPos, instance->model->vertices[v].y);
-    setZ(vertexPos, instance->model->vertices[v].z);
-    setW(vertexPos, 1);
+    Mat *v1 = multiplyMat(camera->lookAt,
+                          getStackItem(instance->projected, triangle.a));
+    Mat *v2 = multiplyMat(camera->lookAt,
+                          getStackItem(instance->projected, triangle.b));
+    Mat *v3 = multiplyMat(camera->lookAt,
+                          getStackItem(instance->projected, triangle.c));
 
-    vertexPos = scale(vertexPos, &instance->s);
+    Mat *p1 = projectVertex(v1);
+    Mat *p2 = projectVertex(v2);
+    Mat *p3 = projectVertex(v3);
 
-    pointPos.x = getX(vertexPos);
-    pointPos.y = getY(vertexPos);
-    pointPos.z = getZ(vertexPos);
+    Color color = {255, 255, 255};
+    drawWireframeTriangle(p1, p2, p3, &color);
 
-    float currentValue = findDistanceToCenter(&pointPos);
+    freeMat(v1);
+    freeMat(v2);
+    freeMat(v3);
 
-    if (currentValue > maxValue)
-      maxValue = currentValue;
+    freeMat(p1);
+    freeMat(p2);
+    freeMat(p3);
   }
-
-  instance->boundingSphereRadius = maxValue;
-  printf("[DEBUG] Instance bounding sphere radius: %f.\n", maxValue);
 }
 
-void updateInstance(Instance *instance, Camera *camera) {
-  if (instance->model == NULL) {
-    printf("[ERROR] Instance does not point to any object.");
-    exit(EXIT_FAILURE);
-  }
+void setInstanceTransform(Transform transform, float3d value,
+                          Instance *instance) {
+  if (transform == SCALE)
+    instance->s = value;
+  else if (transform == ROTATION)
+    instance->r = value;
+  else if (transform == TRANSLATION)
+    instance->t = value;
 
+  instance->updateInstance = true;
+};
+
+void updateInstanceMatrices(Instance *instance) {
+  Mat *translate = createTranslationMatrix(&instance->t);
+  Mat *rotate = createRotationMatrix(&instance->r);
+  Mat *scale = createScaleMatrix(&instance->s);
+
+  Mat *combinedMat = multiplyMat(translate, rotate);
+  instance->transformationsMat = multiplyMat(combinedMat, scale);
+
+  freeMat(combinedMat);
+  freeMat(scale);
+  freeMat(rotate);
+  freeMat(translate);
+}
+
+void updateInstanceVertices(Instance *instance) {
   int verticesCount = instance->model->verticesCount;
   instance->projected = createStack(verticesCount);
 
+  Mat *vertexPos = createMat(4, 1, false);
+
   for (int v = 0; v < verticesCount; ++v) {
-    Mat *vertexPos = createMat(4, 1, false);
     setX(vertexPos, instance->model->vertices[v].x);
     setY(vertexPos, instance->model->vertices[v].y);
     setZ(vertexPos, instance->model->vertices[v].z);
     setW(vertexPos, 1);
 
-    vertexPos = scale(vertexPos, &instance->s);
-    vertexPos = rotate(vertexPos, &instance->r);
-    translate(vertexPos, &instance->t); // will change vertexPos
-
-    vertexPos = multiplyMat(camera->lookAt, vertexPos);
-
-    // update object data such that clipping works.
-    instance->t.x -= instance->pv.x + getX(camera->pos);
-    instance->t.y -= instance->pv.y + getY(camera->pos);
-    instance->t.z -= instance->pv.z + getZ(camera->pos);
-
-    Mat *projectedPoint = projectVertex(vertexPos);
-    freeMat(vertexPos);
-
-    push(instance->projected, projectedPoint);
-
-    instance->pv = instance->t;
+    Mat *transformedPoint =
+        multiplyMat(instance->transformationsMat, vertexPos);
+    push(instance->projected, transformedPoint);
   }
+
+  freeMat(vertexPos);
 }
 
-void renderInstance(Instance *instance) {
-  for (int t = 0; t < instance->model->trianglesCount; ++t) {
-    Triangle triangle = instance->model->trianglesList[t];
-    Mat *v1 = getStackItem(instance->projected, triangle.a);
-    Mat *v2 = getStackItem(instance->projected, triangle.b);
-    Mat *v3 = getStackItem(instance->projected, triangle.c);
-    Color color = {255, 255, 255};
-    drawWireframeTriangle(v1, v2, v3, &color);
+void updateInstance(Instance *instance) {
+  if (instance->updateInstance == false)
+    return;
+
+  if (instance->transformationsMat != NULL) {
+    freeMat(instance->transformationsMat);
+    instance->transformationsMat = NULL;
   }
+  if (instance->projected != NULL) {
+    freeStack(instance->projected);
+    instance->projected = NULL;
+  }
+
+  updateInstanceMatrices(instance);
+  updateInstanceVertices(instance);
+
+  instance->updateInstance = false;
+}
+
+void destroyInstance(Instance *instance) {
+  freeMat(instance->transformationsMat);
+  for (int i = 0; i < instance->projected->top; ++i)
+    freeMat(instance->projected->items[i]);
+  freeStack(instance->projected);
+  free(instance);
 }

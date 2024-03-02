@@ -1,3 +1,0 @@
-src/clipping.c:27:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
-   27 | clipTrianglesAgainstPlane() { Stack *clippedTriangles = createStack(1); }
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~

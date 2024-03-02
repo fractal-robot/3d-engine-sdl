@@ -1,3 +1,5 @@
+/*
+
 #include "scene.h"
 #include "camera.h"
 #include "clipping.h"
@@ -35,8 +37,10 @@ void renderScene(Scene *scene) {
   for (int i = 0; i <= scene->instances->top; i++)
     updateInstance(scene->instances->items[i], scene->camera);
 
-  scene->newInstances = clipScene(scene);
+  scene->validInstances = clipScene(scene);
 
-  for (int i = 0; i <= scene->newInstances->top; i++)
-    renderInstance(scene->newInstances->items[i]);
+  for (int i = 0; i <= scene->validInstances->top; i++)
+    renderInstance(scene->validInstances->items[i]);
 }
+
+*/

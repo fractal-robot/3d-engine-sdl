@@ -37,7 +37,7 @@ Shape *initShapeCube() {
   return cube;
 }
 
-void freeModel(Shape *shape) {
+void freeShape(Shape *shape) {
   free(shape->vertices);
   free(shape->trianglesList);
   free(shape);

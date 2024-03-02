@@ -13,5 +13,7 @@ typedef struct {
 } Camera; // position, target and up vector have to be specified
 
 void setCameraProp(Camera *c);
+void initCamera(Camera *camera);
+void destroyCamera(Camera *camera);
 
 #endif
