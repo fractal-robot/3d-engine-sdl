@@ -8,4 +8,7 @@ typedef struct {
   Mat *color;
 } Vertex;
 
+Vertex *createVertex();
+void destroyVertex(Vertex *vertex);
+
 #endif

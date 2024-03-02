@@ -21,6 +21,6 @@ void sceneAddCamera(Scene *scene, Camera *camera);
 void sceneAddModel(Scene *scene, Shape *model);
 void sceneAddInstance(Scene *scene, Instance *instance);
 void destroyScene(Scene *scene);
-void renderScene(Scene *scene);
+void updateScene(Scene *scene);
 
 #endif

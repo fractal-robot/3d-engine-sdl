@@ -32,7 +32,7 @@ float signedDistance(const Plane *plane, const float3d *vertex) {
 }
 
 Instance *clipInstanceAgainstPlane(Instance *instance, Plane *plane) {
-  float d = signedDistance(plane, &instance->t);
+  float d = signedDistance(plane, &instance->tc);
   if (d > instance->boundingSphereRadius) {
     return instance;
   } else if (d < -instance->boundingSphereRadius) {
@@ -67,14 +67,12 @@ Instance *clipInstance(Instance *instance) {
   return newInstance;
 } */
 
-Stack *clipScene(Scene *scene) {
-  Stack *clippedInstances = createStack(1);
+void clipScene(Scene *scene) {
+  scene->validInstances = createStack(1);
 
   for (int i = 0; i <= scene->instances->top; ++i) {
     Instance *newInstance = clipInstance(scene->instances->items[i]);
     if (newInstance != NULL)
-      push(clippedInstances, newInstance);
+      push(scene->validInstances, newInstance);
   }
-
-  return clippedInstances;
 }

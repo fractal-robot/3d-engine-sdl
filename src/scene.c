@@ -1,10 +1,8 @@
-/*
-
 #include "scene.h"
 #include "camera.h"
-#include "clipping.h"
 #include "instances.h"
 #include "models.h"
+#include "shapes.h"
 #include "stack.h"
 #include <stdlib.h>
 
@@ -21,26 +19,20 @@ void sceneAddInstance(Scene *scene, Instance *instance) {
   push(scene->instances, instance);
 }
 
-void destroyScene(Scene *scene) {
-  for (int i = 0; i <= scene->models->top; ++i)
-    free(scene->models->items[i]);
-  freeStack(scene->models);
+void updateScene(Scene *scene) {
+  for (int i = 0; i <= scene->instances->top; i++)
+    updateInstance(scene->instances->items[i], scene->camera->pos);
+}
 
+void destroyScene(Scene *scene) {
   for (int i = 0; i <= scene->instances->top; ++i)
-    free(scene->instances->items[i]);
+    destroyInstance(scene->instances->items[i]);
   freeStack(scene->instances);
 
+  for (int i = 0; i <= scene->models->top; ++i)
+    destroyShape(scene->models->items[i]);
+  freeStack(scene->models);
+
+  destroyCamera(scene->camera);
   free(scene);
 }
-
-void renderScene(Scene *scene) {
-  for (int i = 0; i <= scene->instances->top; i++)
-    updateInstance(scene->instances->items[i], scene->camera);
-
-  scene->validInstances = clipScene(scene);
-
-  for (int i = 0; i <= scene->validInstances->top; i++)
-    renderInstance(scene->validInstances->items[i]);
-}
-
-*/

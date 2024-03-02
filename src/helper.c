@@ -15,8 +15,11 @@
 // we conpute the eucledian distance from the center of the model, so p2 is
 // constantly equal to 0. This computation should be performed after the scaling
 // only.
-float findDistanceToCenter(const float3d *point) {
-  return sqrt(pow(point->x, 2) + pow(point->y, 2) + pow(point->z, 2));
+float distanceToCenter(float3d center, const Mat *p) {
+  assert(p->rows == 4 && p->cols == 1);
+
+  return sqrt(pow(getX(p) - center.x, 2) + pow(getY(p) - center.y, 2) +
+              pow(getZ(p) - center.z, 2));
 }
 
 Color shadeColor(const Color *col, float shade) {

@@ -2,10 +2,12 @@
 #include "definition.h"
 #include "instances.h"
 #include "matrix.h"
+#include "renderer.h"
 #include "scene.h"
 #include "sdl-interface.h"
 #include "shapes.h"
 #include <SDL2/SDL.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +22,6 @@ int main() {
   SDL_Init(SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_WIDTH, 0, &window,
                               &renderer);
-  SDL_SetWindowTitle(window, "window");
   const Uint8 *kbdState = SDL_GetKeyboardState(NULL);
 
   Camera *camera = malloc(sizeof(Camera));
@@ -34,29 +35,36 @@ int main() {
     camera->pos = pos;
   }
 
+  Scene *scene = createScene();
   Shape *cube = initShapeCube();
+  sceneAddModel(scene, cube);
+
+  sceneAddCamera(scene, camera);
 
   Instance *cube1 = initInstance(cube);
   cube1->s = (float3d){1, 1, 1};
   cube1->t = (float3d){-4, 4, 20};
   cube1->r = (float3d){0, 0, 0};
   cube1->updateInstance = true;
+  sceneAddInstance(scene, cube1);
 
   Instance *cube2 = initInstance(cube);
   cube2->s = (float3d){1, 10, 5};
   cube2->t = (float3d){0, 0, 50};
   cube2->r = (float3d){0, 0, 40};
   cube2->updateInstance = true;
+  sceneAddInstance(scene, cube2);
 
   clearCanva();
 
   float3d rotation = {25, 25, 25};
+  float3d scale = {1, 1, 1};
 
   SDL_RenderPresent(renderer);
 
   double delta = 0;
   int a = 0, b = 0;
-  _Bool quit = false;
+  bool quit = false;
 
   while (1) {
     a = SDL_GetTicks();
@@ -93,14 +101,15 @@ int main() {
 
       setCameraProp(camera);
 
-      rotation.x += 20;
-      setInstanceTransform(ROTATION, rotation, cube1);
+      rotation.x += 2;
+      scale.x += 1e-2;
+      setInstanceTransform(ROTATE, rotation, cube1);
+      setInstanceTransform(ROTATE, rotation, cube2);
+      setInstanceTransform(SCALE, scale, cube2);
+      setInstanceTransform(TRANSLATE, scale, cube2);
 
-      updateInstance(cube1);
-      updateInstance(cube2);
-
-      renderWireframeInstance(cube1, camera);
-      renderWireframeInstance(cube2, camera);
+      updateScene(scene);
+      renderScene(scene);
 
       SDL_RenderPresent(renderer);
       if (quit)
@@ -111,7 +120,7 @@ int main() {
   destroyInstance(cube1);
   destroyInstance(cube2);
 
-  freeShape(cube);
+  destroyShape(cube);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

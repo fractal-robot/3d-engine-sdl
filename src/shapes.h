@@ -12,6 +12,6 @@ typedef struct {
 } Shape;
 
 Shape *initShapeCube();
-void freeShape(Shape *shape);
+void destroyShape(Shape *shape);
 
 #endif
