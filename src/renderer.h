@@ -5,6 +5,7 @@
 #include "instances.h"
 #include "scene.h"
 
+void renderInstance(Instance *instance, Camera *camera);
 void renderWireframeInstance(Instance *instance, Camera *camera);
 void renderScene(Scene *scene);
 

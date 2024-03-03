@@ -76,7 +76,6 @@ void updateInstanceVertices(Instance *instance) {
 
   for (int v = 0; v < verticesCount; ++v) {
     Vertex *vertex = createVertex();
-    vertex->position = createMat(4, 1, false);
 
     setX(vertexPos, instance->model->vertices[v].x);
     setY(vertexPos, instance->model->vertices[v].y);

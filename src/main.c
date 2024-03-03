@@ -7,7 +7,6 @@
 #include "sdl-interface.h"
 #include "shapes.h"
 #include <SDL2/SDL.h>
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +41,7 @@ int main() {
   sceneAddCamera(scene, camera);
 
   Instance *cube1 = initInstance(cube);
-  cube1->s = (float3d){1, 1, 1};
+  cube1->s = (float3d){10, 10, 10};
   cube1->t = (float3d){-4, 4, 20};
   cube1->r = (float3d){0, 0, 0};
   cube1->updateInstance = true;
@@ -102,6 +101,7 @@ int main() {
       setCameraProp(camera);
 
       rotation.x += 2;
+      rotation.z += 10;
       scale.x += 1e-2;
       setInstanceTransform(ROTATE, rotation, cube1);
       setInstanceTransform(ROTATE, rotation, cube2);

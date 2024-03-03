@@ -17,9 +17,9 @@ void drawLine(Mat *p0, Mat *p1, const Color *color);
 void drawWireframeTriangle(Mat *p0, Mat *p1, Mat *p2, const Color *color);
 void drawTriangle(Mat *p0, Mat *p1, Mat *p2, const Color *color);
 Mat *viewPortToCanva(const Mat *point);
-Mat *projectVertex(const Mat *point);
 void drawShadeTriangle(Mat *p0, Mat *p1, Mat *p2, float h0, float h1, float h2,
                        const Color *color);
 float distanceToCenter(float3d center, const Mat *p);
+Mat *projectVertex(const Mat *point);
 
 #endif

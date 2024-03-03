@@ -166,7 +166,6 @@ void drawTriangle(Mat *p0, Mat *p1, Mat *p2, const Color *color) {
 
   for (int y = p0->data[1][0]; y < p2->data[1][0]; ++y) {
     int fromX = *(int *)getStackItem(xLeft, y - p0->data[1][0]);
-
     int toX = *(int *)getStackItem(xRight, y - p0->data[1][0]);
     for (int x = fromX; x <= toX; ++x) {
       pixelCoord->data[0][0] = x;
@@ -270,7 +269,7 @@ Mat *viewPortToCanva(const Mat *point) {
 
 Mat *projectVertex(const Mat *point) {
   assert(point->rows == 4 && point->cols == 1);
-  const Mat *projected = createMat(2, 1, false);
+  Mat *projected = createMat(2, 1, false);
   setX(projected, getX(point) * D / getZ(point));
   setY(projected, getY(point) * D / getZ(point));
   Mat *toCava = viewPortToCanva(projected);
