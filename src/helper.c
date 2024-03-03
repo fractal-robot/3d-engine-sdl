@@ -26,7 +26,7 @@ Color shadeColor(const Color *col, float shade) {
   return (Color){col->red * shade, col->green * shade, col->blue * shade};
 }
 
-Stack *interpolateColor(int i0, float d0, int i1, float d1) {
+Stack *interpolateFloat(int i0, float d0, int i1, float d1) {
   // i is the independant variable, d is the value we want to compute
   if (i0 == i1) {
     Stack *values = createStack(1);
@@ -211,11 +211,11 @@ void drawShadeTriangle(Mat *p0, Mat *p1, Mat *p2, float h0, float h1, float h2,
   Stack *x02 = interpolate(p0->data[0][1], p0->data[0][0], p2->data[0][1],
                            p2->data[0][0]);
 
-  Stack *h012 = interpolateColor(p0->data[0][1], h0, p1->data[0][1], h1);
+  Stack *h012 = interpolateFloat(p0->data[0][1], h0, p1->data[0][1], h1);
   pop(h012); // the last value is the same than the first value of x12
-  Stack *h12 = interpolateColor(p1->data[0][1], h1, p2->data[0][1], h2);
+  Stack *h12 = interpolateFloat(p1->data[0][1], h1, p2->data[0][1], h2);
   append(h012, h12);
-  Stack *h02 = interpolateColor(p0->data[0][1], h0, p2->data[0][1], h2);
+  Stack *h02 = interpolateFloat(p0->data[0][1], h0, p2->data[0][1], h2);
 
   Stack *xLeft;
   Stack *hLeft;
@@ -241,7 +241,7 @@ void drawShadeTriangle(Mat *p0, Mat *p1, Mat *p2, float h0, float h1, float h2,
   for (int y = p0->data[0][1]; y < p2->data[0][1]; ++y) {
     int fromX = *(int *)getStackItem(xLeft, y - p0->data[0][1]);
     int toX = *(int *)getStackItem(xRight, y - p0->data[0][1]);
-    Stack *hueSegment = interpolateColor(
+    Stack *hueSegment = interpolateFloat(
         fromX, *(float *)getStackItem(hLeft, y - p0->data[0][1]), toX,
         *(float *)getStackItem(hRight, y - p0->data[0][1]));
     for (int x = fromX; x <= toX; ++x) {
@@ -272,7 +272,31 @@ Mat *projectVertex(const Mat *point) {
   Mat *projected = createMat(2, 1, false);
   setX(projected, getX(point) * D / getZ(point));
   setY(projected, getY(point) * D / getZ(point));
-  Mat *toCava = viewPortToCanva(projected);
+  Mat *toCanva = viewPortToCanva(projected);
   freeMat(projected);
-  return toCava;
+  return toCanva;
+}
+
+// ---
+// they carry the z value of the vertex so the z-buffer can do its job
+
+Mat *viewPortToCanvaCarryZ(const Mat *point) {
+  Mat *toCanva = createMat(3, 1, false);
+  setX(toCanva, getX(point) * (int)RENDER_WIDTH / VIEWPORT_WIDTH);
+  setY(toCanva, getY(point) * (int)RENDER_WIDTH / VIEWPORT_WIDTH);
+
+  setZ(toCanva, getZ(point));
+  return toCanva;
+}
+
+Mat *projectVertexCarryZ(const Mat *point) {
+  assert(point->rows == 4 && point->cols == 1);
+  Mat *projected = createMat(3, 1, false);
+  setX(projected, getX(point) * D / getZ(point));
+  setY(projected, getY(point) * D / getZ(point));
+  setZ(projected, getZ(point));
+  Mat *toCanva = viewPortToCanvaCarryZ(projected);
+  freeMat(projected);
+  assert(toCanva->rows == 3 && toCanva->cols == 1);
+  return toCanva;
 }
